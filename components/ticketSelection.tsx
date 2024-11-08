@@ -2,12 +2,12 @@ import { View, Text, Pressable } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { icons } from '@/constants';
 import Icon from '@/components/icon';
-import Frag from '@/components/frag';
+import Figure from '@/components/figure';
 import { EventPriceCategory } from '@/graphql/schema.types';
 import { TicketDetail, TicketCount } from '@/components/program/types';
 import * as Crypto from 'expo-crypto';
 
-const ChooseTicket = ({
+const TicketSelection = ({
   ticketCount,
   setTicketCount,
   tickets,
@@ -66,9 +66,9 @@ const ChooseTicket = ({
     <View key={index} className="flex flex-col items-start">
       <View className="flex flex-row items-center justify-between w-full h-14 rounded-lg bg-gray-200 mt-2.5">
         <View className="flex-row ml-5" style={{ columnGap: 10 }}>
-          <Frag title="Category" value={epc.name} />
-          <Frag title="Section" value={epc.section.name} />
-          <Frag title="Price" value={`${epc.price} Kč`} />
+          <Figure title="Category" value={epc.name} />
+          <Figure title="Section" value={epc.section.name} />
+          <Figure title="Price" value={`${epc.price} Kč`} />
         </View>
         <View className="flex flex-row items-center justify-between w-1/5 mr-5">
           <Pressable onPress={decrement}>
@@ -95,4 +95,4 @@ const ChooseTicket = ({
   );
 };
 
-export default ChooseTicket;
+export default TicketSelection;

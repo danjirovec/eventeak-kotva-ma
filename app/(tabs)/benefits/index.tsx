@@ -41,7 +41,7 @@ const Benefits = () => {
     },
   });
 
-  const benefits = data?.benefitsAndMembership;
+  const benefits = data?.getUserBenefits;
 
   const handleSetVisible = (visible: boolean) => {
     setModalVisible(prevState => ({

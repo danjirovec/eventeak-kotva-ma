@@ -6,7 +6,7 @@ import { images } from '../constants';
 import CustomButton from '@/components/customButton';
 import { Redirect, router } from 'expo-router';
 import Loader from '@/components/loader';
-import { save } from '@/lib/save';
+import { saveAsyncStorage } from '@/lib/saveAsyncStorage';
 import { useGlobalStore } from '@/context/globalProvider';
 
 const App = () => {
@@ -54,7 +54,7 @@ const App = () => {
             <CustomButton
               title="Continue with email"
               handlePress={() => {
-                save(true);
+                saveAsyncStorage(true);
                 router.replace('/sign-in');
               }}
               containerStyles="w-80 mt-10"

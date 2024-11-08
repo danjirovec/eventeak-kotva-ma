@@ -1,9 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { View, Text, ScrollView, Dimensions, Image } from 'react-native';
-
-import { images } from '../../constants';
+import { View, Text } from 'react-native';
 import CustomButton from '@/components/customButton';
 import FormField from '@/components/formField';
 import {
@@ -12,11 +9,11 @@ import {
   validateRequiredEmail,
 } from '@/components/auth/validation';
 import { forgotPassword } from '@/lib/supabase';
-import CustomModal from '@/components/modal';
 import Body from '@/components/body';
 import Container from '@/components/container';
 import Header from '@/components/header';
 import BackButton from '@/components/backButton';
+import SlideAlert from '@/components/slideAlert';
 
 const ForgotPassword = () => {
   const [form, setForm] = useState({ email: '' });
@@ -25,25 +22,19 @@ const ForgotPassword = () => {
   });
   const [isSubmitting, setSubmitting] = useState(false);
   const [valid, setValid] = useState(false);
-  const [modalVisiable, setModalVisiable] = useState(false);
-  const [modalText, setModalText] = useState({ title: '', description: '' });
+  const [alert, setAlert] = useState({
+    visible: false,
+    message: '',
+    success: false,
+  });
 
   const submit = async () => {
     setSubmitting(true);
     const error = await forgotPassword(form.email);
     if (error) {
-      setModalText({
-        title: 'Reset password error',
-        description: error.message,
-      });
-      setModalVisiable(true);
+      showAlert(error.message, false);
     } else {
-      setModalText({
-        title: 'Reset password link sent',
-        description:
-          'Please check your inbox and click on the link to reset your password',
-      });
-      setModalVisiable(true);
+      showAlert('Reset link sent', false);
     }
     setSubmitting(false);
   };
@@ -54,6 +45,14 @@ const ForgotPassword = () => {
       ...errors,
       email: validateEmail(e) ?? '',
     });
+  };
+
+  const showAlert = (message: string, success: boolean) => {
+    setAlert({ visible: true, message: message, success: success });
+    setTimeout(
+      () => setAlert({ visible: false, message: message, success: success }),
+      3500,
+    );
   };
 
   useEffect(() => {
@@ -68,10 +67,10 @@ const ForgotPassword = () => {
     <Container>
       <Header left={<BackButton />} title="Forgot Password" />
       <Body>
-        <CustomModal
-          visible={modalVisiable}
-          setVisible={setModalVisiable}
-          text={modalText}
+        <SlideAlert
+          message={alert.message}
+          visible={alert.visible}
+          success={alert.success}
         />
         <FormField
           title="Email*"

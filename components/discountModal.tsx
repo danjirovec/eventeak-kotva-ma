@@ -64,7 +64,7 @@ const DiscountModal = ({
             <View style={{ rowGap: 15 }}>
               <View className="items-start w-full">
                 <Text className="font-rmedium text-black text-xl">
-                  Choose discount
+                  Select discount
                 </Text>
               </View>
               {data.length < 1 ? (

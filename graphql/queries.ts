@@ -69,7 +69,7 @@ export const PRICES_QUERY = gql`
     $paging: OffsetPaging!
     $meta: String!
   ) {
-    prices(filter: $filter, sorting: $sorting, paging: $paging, meta: $meta) {
+    getEventPrices(filter: $filter, sorting: $sorting, paging: $paging, meta: $meta) {
       nodes {
         id
         name
@@ -94,7 +94,7 @@ export const USER_PROFILE_QUERY = gql`
     $paging: OffsetPaging!
     $meta: String!
   ) {
-    profile(filter: $filter, sorting: $sorting, paging: $paging, meta: $meta) {
+    profileInfo(filter: $filter, sorting: $sorting, paging: $paging, meta: $meta) {
       id
       email
       placeOfResidence
@@ -117,7 +117,7 @@ export const BENEFITS_QUERY = gql`
     $paging: OffsetPaging!
     $meta: String!
   ) {
-    benefitsAndMembership(
+    getUserBenefits(
       filter: $filter
       sorting: $sorting
       paging: $paging
@@ -223,7 +223,7 @@ export const USER_TICKETS_QUERY = gql`
     $sorting: [TicketSort!]
     $paging: OffsetPaging!
   ) {
-    userTickets(filter: $filter, sorting: $sorting, paging: $paging) {
+    getUserTickets(filter: $filter, sorting: $sorting, paging: $paging) {
       valid {
         id
         ticketSet {

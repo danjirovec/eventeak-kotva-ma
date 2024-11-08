@@ -59,7 +59,9 @@ const Profile = () => {
     setIsLoggingOut(false);
   };
 
-  const user: UserProfile = data?.profile;
+  const user: UserProfile = data?.profileInfo;
+
+  console.log(error, data);
 
   const onRefresh = async () => {
     setRefreshing(true);

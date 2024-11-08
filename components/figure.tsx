@@ -1,7 +1,7 @@
 import { View, Text } from 'react-native';
 import React from 'react';
 
-const Frag = ({
+const Figure = ({
   title,
   value,
   fragStyles,
@@ -22,4 +22,4 @@ const Frag = ({
   );
 };
 
-export default Frag;
+export default Figure;

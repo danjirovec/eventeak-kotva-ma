@@ -1,15 +1,14 @@
 import { FlatList, RefreshControl, Text, View } from 'react-native';
 import React, { useState } from 'react';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useQuery } from '@apollo/client';
 import { EVENTS_QUERY } from '@/graphql/queries';
-import Category from '@/components/category';
+import CategoryFilter from '@/components/categoryFilter';
 import Loader from '@/components/loader';
 import { categories } from '@/lib/enums';
-import ListEvent from '@/components/listEvent';
+import EventPreviewBox from '@/components/eventPreviewBox';
 import { useGlobalStore } from '@/context/globalProvider';
 import Header from '@/components/header';
-import BodyNoScroll from '@/components/bodyNoScroll';
+import NoScrollBody from '@/components/bodyNoScroll';
 import Container from '@/components/container';
 
 const Program = () => {
@@ -43,12 +42,12 @@ const Program = () => {
     <Container>
       <View className="w-full justify-start h-full">
         <Header title="Program" />
-        <BodyNoScroll>
+        <NoScrollBody>
           <View className="mt-5">
             <FlatList
               data={categories}
               renderItem={item => (
-                <Category
+                <CategoryFilter
                   item={item.item}
                   selectedCategory={selectedCategory}
                   setSelectedCategory={setSelectedCategory}
@@ -78,7 +77,7 @@ const Program = () => {
               }}
               showsVerticalScrollIndicator={false}
               data={data.events.nodes}
-              renderItem={({ item }) => <ListEvent item={item} />}
+              renderItem={({ item }) => <EventPreviewBox item={item} />}
               keyExtractor={item => item.id}
               refreshControl={
                 <RefreshControl
@@ -112,7 +111,7 @@ const Program = () => {
               ListFooterComponent={loading ? <Loader /> : null}
             />
           )}
-        </BodyNoScroll>
+        </NoScrollBody>
       </View>
     </Container>
   );

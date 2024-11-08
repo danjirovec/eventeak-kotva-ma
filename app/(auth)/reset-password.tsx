@@ -1,9 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { View, Text, ScrollView, Dimensions, Image } from 'react-native';
-
-import { images } from '../../constants';
+import { View, Text } from 'react-native';
 import CustomButton from '@/components/customButton';
 import FormField from '@/components/formField';
 import {
@@ -13,10 +10,10 @@ import {
   validateRequiredReset,
 } from '@/components/auth/validation';
 import { resetPassword } from '@/lib/supabase';
-import CustomModal from '@/components/modal';
 import Body from '@/components/body';
 import Container from '@/components/container';
 import Header from '@/components/header';
+import SlideAlert from '@/components/slideAlert';
 
 const ResetPassword = () => {
   const [form, setForm] = useState({ password: '', confirmPassword: '' });
@@ -26,26 +23,19 @@ const ResetPassword = () => {
   });
   const [isSubmitting, setSubmitting] = useState(false);
   const [valid, setValid] = useState(false);
-  const [modalVisiable, setModalVisiable] = useState(false);
-  const [modalRedirect, setModalRedirect] = useState(false);
-  const [modalText, setModalText] = useState({ title: '', description: '' });
+  const [alert, setAlert] = useState({
+    visible: false,
+    message: '',
+    success: false,
+  });
 
   const submit = async () => {
     setSubmitting(true);
     const error = await resetPassword(form.password);
     if (error) {
-      setModalText({
-        title: 'Reset password error',
-        description: error.message,
-      });
-      setModalVisiable(true);
+      showAlert(error.message, false);
     } else {
-      setModalRedirect(true);
-      setModalText({
-        title: 'Password reset successful',
-        description: 'You can now log in with your new password',
-      });
-      setModalVisiable(true);
+      showAlert('Reset successful', true);
     }
     setSubmitting(false);
   };
@@ -66,6 +56,14 @@ const ResetPassword = () => {
     });
   };
 
+  const showAlert = (message: string, success: boolean) => {
+    setAlert({ visible: true, message: message, success: success });
+    setTimeout(
+      () => setAlert({ visible: false, message: message, success: success }),
+      3500,
+    );
+  };
+
   useEffect(() => {
     if (validateRequiredReset(form) && validateErrors(errors)) {
       setValid(true);
@@ -82,11 +80,10 @@ const ResetPassword = () => {
         title="Reset Password"
       />
       <Body>
-        <CustomModal
-          visible={modalVisiable}
-          setVisible={setModalVisiable}
-          text={modalText}
-          {...(modalRedirect && { redirectTo: '/(auth)/sign-in' })}
+        <SlideAlert
+          message={alert.message}
+          visible={alert.visible}
+          success={alert.success}
         />
         <FormField
           title="Password*"

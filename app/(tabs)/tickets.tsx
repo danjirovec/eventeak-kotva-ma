@@ -3,14 +3,12 @@ import React, { useState } from 'react';
 import TicketModal from '@/components/ticketModal';
 import { useQuery } from '@apollo/client';
 import { USER_TICKETS_QUERY } from '@/graphql/queries';
-import { TicketAgg } from '@/graphql/schema.types';
+import { UserTickets } from '@/graphql/schema.types';
 import { useGlobalStore } from '@/context/globalProvider';
 import Container from '@/components/container';
 import Header from '@/components/header';
 import Body from '@/components/body';
 import Loader from '@/components/loader';
-import Icon from '@/components/icon';
-import { icons } from '@/constants';
 import SlideDown from '@/components/slideDown';
 
 const Tickets = () => {
@@ -20,7 +18,7 @@ const Tickets = () => {
   }));
   const [modalVisible, setModalVisible] = useState<{
     visible: boolean;
-    data: TicketAgg | undefined;
+    data: UserTickets | undefined;
   }>({
     visible: false,
     data: undefined,
@@ -39,7 +37,7 @@ const Tickets = () => {
     },
   });
 
-  const tickets = data?.userTickets;
+  const tickets = data?.getUserTickets;
 
   const handleSetVisible = (visible: boolean) => {
     setModalVisible(prevState => ({
@@ -88,7 +86,7 @@ const Tickets = () => {
                       </Text>
                     </View>
                   ) : (
-                    tickets.valid.map((item: TicketAgg) => (
+                    tickets.valid.map((item: UserTickets) => (
                       <TouchableOpacity
                         key={item.id}
                         onPress={() => {
@@ -128,7 +126,7 @@ const Tickets = () => {
                       </Text>
                     </View>
                   ) : (
-                    tickets.invalid.map((item: TicketAgg) => (
+                    tickets.invalid.map((item: UserTickets) => (
                       <View
                         key={item.id}
                         className="w-full h-28 p-5 rounded-lg bg-red-200">

@@ -4,7 +4,7 @@ import Icon from './icon';
 import { icons } from '@/constants';
 import { router } from 'expo-router';
 
-const SeeMore = ({ eventId }: { eventId: string }) => {
+const MoreButton = ({ eventId }: { eventId: string }) => {
   return (
     <TouchableOpacity
       onPress={() => {
@@ -20,4 +20,4 @@ const SeeMore = ({ eventId }: { eventId: string }) => {
   );
 };
 
-export default SeeMore;
+export default MoreButton;

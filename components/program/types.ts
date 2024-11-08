@@ -10,7 +10,8 @@ export type TicketDetail = {
   epc: EventPriceCategory;
   price: number;
   discount?: Discount;
-  seat?: Seat;
+  seatNumber?: number;
+  row?: string;
 };
 
 export type TicketCount = {
@@ -27,4 +28,5 @@ export type TicketsOverviewProps = {
   discounts: Discount[];
   modalVisibility: { [key: string]: boolean };
   toggleModalVisibility: (ticketId: string, visible: boolean) => void;
+  handleSendMessage: (tickets: TicketDetail[]) => void;
 };

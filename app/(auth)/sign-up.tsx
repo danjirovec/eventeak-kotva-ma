@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Link } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { View, Text, ScrollView, Dimensions, Image } from 'react-native';
-import { images } from '../../constants';
+import { Link, router } from 'expo-router';
+import { View, Text } from 'react-native';
 import CustomButton from '@/components/customButton';
 import SignUpStepOne from '@/components/auth/sign-up-step-one';
 import SignUpStepTwo from '@/components/auth/sign-up-step-two';
@@ -13,12 +11,12 @@ import {
 } from '@/components/auth/validation';
 import { getToday } from '@/lib/getToday';
 import { signUpWithEmail } from '@/lib/supabase';
-import CustomModal from '@/components/modal';
 import { useGlobalStore } from '@/context/globalProvider';
 import Body from '@/components/body';
 import Container from '@/components/container';
 import Header from '@/components/header';
 import BackButton from '@/components/backButton';
+import SlideAlert from '@/components/slideAlert';
 
 const SignUp = () => {
   const business = useGlobalStore(state => state.business);
@@ -44,9 +42,11 @@ const SignUp = () => {
   const [currentStep, setCurrentStep] = useState(1);
   const [validOne, setValidOne] = useState(false);
   const [validTwo, setValidTwo] = useState(false);
-  const [modalVisiable, setModalVisiable] = useState(false);
-  const [modalRedirect, setModalRedirect] = useState(false);
-  const [modalText, setModalText] = useState({ title: '', description: '' });
+  const [alert, setAlert] = useState({
+    visible: false,
+    message: '',
+    success: false,
+  });
 
   const nextStep = () => setCurrentStep(currentStep + 1);
   const prevStep = () => setCurrentStep(currentStep - 1);
@@ -76,6 +76,14 @@ const SignUp = () => {
     }
   };
 
+  const showAlert = (message: string, success: boolean) => {
+    setAlert({ visible: true, message: message, success: success });
+    setTimeout(
+      () => setAlert({ visible: false, message: message, success: success }),
+      3500,
+    );
+  };
+
   useEffect(() => {
     if (validateRequiredStepOne(form)) {
       setValidOne(true);
@@ -93,16 +101,11 @@ const SignUp = () => {
     setSubmitting(true);
     const { error, session } = await signUpWithEmail(form, business);
     if (error) {
-      setModalText({ title: 'Sign up error', description: error.message });
-      setModalVisiable(true);
+      showAlert(error.message, false);
     }
     if (!session && !error) {
-      setModalRedirect(true);
-      setModalText({
-        title: 'Sign up successful',
-        description: 'Please check your inbox and verify email',
-      });
-      setModalVisiable(true);
+      showAlert('Verify your email', true);
+      router.replace('/(auth)/sign-in');
     }
     setSubmitting(false);
   };
@@ -111,11 +114,10 @@ const SignUp = () => {
     <Container>
       <Header left={<BackButton />} title="Sign Up" />
       <Body>
-        <CustomModal
-          visible={modalVisiable}
-          setVisible={setModalVisiable}
-          text={modalText}
-          {...(modalRedirect && { redirectTo: '/(auth)/sign-in' })}
+        <SlideAlert
+          message={alert.message}
+          visible={alert.visible}
+          success={alert.success}
         />
         {renderStep()}
 

@@ -12,13 +12,10 @@ export type UpdateUserMutation = {
 };
 
 export type UpdateUserPasswordMutationVariables = Types.Exact<{
-  input: Types.UpdateUserPassword;
+  input: Types.UpdatePassword;
 }>;
 
-export type UpdateUserPasswordMutation = Pick<
-  Types.Mutation,
-  'updateUserPassword'
->;
+export type UpdateUserPasswordMutation = Pick<Types.Mutation, 'updatePassword'>;
 
 export type CreateTicketMutationVariables = Types.Exact<{
   input: Types.CreateOneTicketInput;
@@ -34,23 +31,11 @@ export type CreateTicketMutation = {
   };
 };
 
-export type CreateTicketsAndOrderMutationVariables = Types.Exact<{
-  tickets: Array<Types.CreateTicket> | Types.CreateTicket;
-  order: Types.CreateOrder;
+export type CreateTicketsMutationVariables = Types.Exact<{
+  input: Types.CreateTicketOrder;
 }>;
 
-export type CreateTicketsAndOrderMutation = {
-  createTicketsAndOrder: Array<
-    Pick<Types.Ticket, 'id' | 'price' | 'validated'> & {
-      discount?: Types.Maybe<Pick<Types.Discount, 'id'>>;
-      event: Pick<Types.Event, 'id' | 'name'>;
-      section: Pick<Types.Section, 'id' | 'name'>;
-      seat?: Types.Maybe<Pick<Types.Seat, 'id'>>;
-      user?: Types.Maybe<Pick<Types.User, 'id'>>;
-      order?: Types.Maybe<Pick<Types.Order, 'id' | 'total'>>;
-    }
-  >;
-};
+export type CreateTicketsMutation = { createTickets: Pick<Types.Event, 'id'> };
 
 export type UpdateEventMutationVariables = Types.Exact<{
   input: Types.UpdateEvent;
@@ -141,7 +126,7 @@ export type PricesListQueryVariables = Types.Exact<{
 }>;
 
 export type PricesListQuery = {
-  prices: Pick<Types.EventPriceCategoryAvailable, 'counts'> & {
+  getEventPrices: Pick<Types.EventPriceCategoryAvailable, 'counts'> & {
     nodes: Array<
       Pick<
         Types.EventPriceCategory,
@@ -159,7 +144,7 @@ export type UserProfileQueryVariables = Types.Exact<{
 }>;
 
 export type UserProfileQuery = {
-  profile: Pick<
+  profileInfo: Pick<
     Types.UserProfile,
     | 'id'
     | 'email'
@@ -183,10 +168,7 @@ export type BenefitsAndMembershipQueryVariables = Types.Exact<{
 }>;
 
 export type BenefitsAndMembershipQuery = {
-  benefitsAndMembership: Pick<
-    Types.BenefitsAndMembership,
-    'membershipPoints'
-  > & {
+  getUserBenefits: Pick<Types.UserBenefits, 'membershipPoints'> & {
     available: Array<
       Pick<
         Types.Benefit,
@@ -254,9 +236,9 @@ export type UserTicketsListQueryVariables = Types.Exact<{
 }>;
 
 export type UserTicketsListQuery = {
-  userTickets: {
+  getUserTickets: {
     valid: Array<
-      Pick<Types.TicketAgg, 'id'> & {
+      Pick<Types.UserTickets, 'id'> & {
         ticketSet: Array<
           Pick<Types.Ticket, 'id' | 'created' | 'price' | 'validated'> & {
             business: Pick<Types.Business, 'id' | 'name'>;
@@ -272,7 +254,7 @@ export type UserTicketsListQuery = {
       }
     >;
     invalid: Array<
-      Pick<Types.TicketAgg, 'id'> & {
+      Pick<Types.UserTickets, 'id'> & {
         ticketSet: Array<
           Pick<Types.Ticket, 'id' | 'created' | 'price' | 'validated'> & {
             business: Pick<Types.Business, 'id' | 'name'>;

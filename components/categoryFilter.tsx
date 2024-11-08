@@ -1,7 +1,7 @@
 import { View, Text, TouchableOpacity } from 'react-native';
 import React from 'react';
 
-const Category = ({
+const CategoryFilter = ({
   item,
   selectedCategory,
   setSelectedCategory,
@@ -29,4 +29,4 @@ const Category = ({
   );
 };
 
-export default Category;
+export default CategoryFilter;

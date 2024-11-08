@@ -1,9 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'expo-router';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { View, Text, ScrollView, Dimensions, Image } from 'react-native';
+import { View, Text } from 'react-native';
 
-import { images } from '../../constants';
 import CustomButton from '@/components/customButton';
 import FormField from '@/components/formField';
 import {
@@ -12,25 +10,23 @@ import {
   validateRequiredLogin,
 } from '@/components/auth/validation';
 import { signInWithEmail } from '@/lib/supabase';
-import CustomModal from '@/components/modal';
 import Container from '@/components/container';
 import Body from '@/components/body';
 import Header from '@/components/header';
+import SlideAlert from '@/components/slideAlert';
 
 const SignIn = () => {
   const [form, setForm] = useState({ email: '', password: '' });
   const [errors, setErrors] = useState<EmailErrors>({ email: '' });
   const [isSubmitting, setSubmitting] = useState(false);
   const [valid, setValid] = useState(false);
-  const [modalVisiable, setModalVisiable] = useState(false);
-  const [modalText, setModalText] = useState({ title: '', description: '' });
+  const [alert, setAlert] = useState({ visible: false, message: '' });
 
   const submit = async () => {
     setSubmitting(true);
     const error = await signInWithEmail(form.email, form.password);
     if (error) {
-      setModalText({ title: 'Log in error', description: error.message });
-      setModalVisiable(true);
+      showAlert(error.message);
     }
     setSubmitting(false);
   };
@@ -41,6 +37,11 @@ const SignIn = () => {
       ...errors,
       email: validateEmail(e) ?? '',
     });
+  };
+
+  const showAlert = (message: string) => {
+    setAlert({ visible: true, message: message });
+    setTimeout(() => setAlert({ visible: false, message: message }), 3500);
   };
 
   useEffect(() => {
@@ -55,10 +56,10 @@ const SignIn = () => {
     <Container>
       <Header title="Sign In" />
       <Body>
-        <CustomModal
-          visible={modalVisiable}
-          setVisible={setModalVisiable}
-          text={modalText}
+        <SlideAlert
+          message={alert.message}
+          visible={alert.visible}
+          success={false}
         />
         <FormField
           title="Email*"

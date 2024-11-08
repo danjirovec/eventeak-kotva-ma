@@ -1,6 +1,5 @@
-import { View, Text, ScrollView, RefreshControl } from 'react-native';
-import React, { useEffect, useState } from 'react';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { View, Text, RefreshControl } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useQuery, useLazyQuery } from '@apollo/client';
 import { DISCOUNTS_QUERY, EVENTS_QUERY, PRICES_QUERY } from '@/graphql/queries';
@@ -11,15 +10,16 @@ import { icons } from '@/constants';
 import CustomButton from '@/components/customButton';
 import Icon from '@/components/icon';
 import EventDetailInfoBox from '@/components/eventDetailInfo';
-import ChooseTicket from '@/components/chooseTicket';
+import TicketSelection from '@/components/ticketSelection';
 import { TicketDetail, TicketCount } from '@/components/program/types';
-import AvailabilityLegend from '@/components/availabilityLegend';
+import SeatAvailability from '@/components/seatAvailability';
 import TicketsOverview from '@/components/ticketsOverview';
 import { useGlobalStore } from '@/context/globalProvider';
 import Container from '@/components/container';
 import Body from '@/components/body';
 import Header from '@/components/header';
 import BackButton from '@/components/backButton';
+import { WebView } from 'react-native-webview';
 
 const EventDetail = () => {
   const { event } = useLocalSearchParams();
@@ -33,6 +33,8 @@ const EventDetail = () => {
   const [ticketCount, setTicketCount] = useState<TicketCount[]>([]);
   const [tickets, setTickets] = useState<TicketDetail[]>([]);
   const [refreshing, setRefreshing] = useState(false);
+  const [scrollEnabled, setScrollEnabled] = useState(true);
+  const webViewRef = useRef<WebView>(null);
 
   const {
     data: eventData,
@@ -65,7 +67,7 @@ const EventDetail = () => {
 
   const discounts: Discount[] = discountsData?.discounts?.nodes;
   const eventDetails: Event = eventData?.events?.nodes?.[0];
-  const prices = pricesData?.prices;
+  const prices = pricesData?.getEventPrices;
 
   useEffect(() => {
     let total = 0;
@@ -121,6 +123,66 @@ const EventDetail = () => {
     setRefreshing(false);
   };
 
+  const handleOnMessage = (event: any) => {
+    const message = event.nativeEvent.data;
+    const seats = JSON.parse(message);
+    const updatedTickets = seats.map((seat: any) => {
+      const matchingTicket = tickets.find(
+        (ticket: any) => ticket.id === seat.id,
+      );
+      return {
+        price: matchingTicket?.discount
+          ? Math.ceil(
+              (1 - matchingTicket?.discount.percentage / 100) * seat.price,
+            )
+          : seat.price,
+        id: seat.id,
+        epc: prices.nodes.find(
+          (price: EventPriceCategory) => seat.epcId == price.id,
+        ),
+        seatNumber: seat.seatNumber,
+        row: seat.rowName,
+        discount: matchingTicket?.discount || null,
+      };
+    });
+    setTickets(updatedTickets);
+  };
+
+  const handleSendMessage = (tickets: TicketDetail[]) => {
+    const stringTickets = JSON.stringify(tickets);
+    const jsCode = `
+      try {
+        const parsedTickets = JSON.parse('${stringTickets}');
+        const removedTickets = window.tickets.filter(
+          (ticket) =>
+            !parsedTickets.some(
+              (updatedTicket) => updatedTicket.id === ticket.id,
+            ),
+        );
+        removedTickets.forEach((seat) => {
+          if (seat.discount) {
+            seat.discount = null;
+            seat.price = seat.epcPrice;
+          }
+          if (!seat.reserved) {
+            seat.fill = seat.sectionColor;
+          } else {
+            seat.fill = '#cccccc';
+          }
+        });
+        const remainingTickets = window.tickets.filter((ticket) =>
+          parsedTickets.some((updatedTicket) => updatedTicket.id === ticket.id),
+        );
+        window.setTickets(remainingTickets);
+        window.canvas.requestRenderAll();
+      }
+      catch (error) {
+        alert(error)
+      }
+      `;
+    webViewRef?.current?.injectJavaScript(jsCode);
+  };
+
   return (
     <Container>
       {eventLoading || pricesLoading || discountsLoading || !prices ? (
@@ -133,6 +195,7 @@ const EventDetail = () => {
             titleStyles="text-2xl pb-0.5"
           />
           <Body
+            scrollEnabled={scrollEnabled}
             refreshControl={
               <RefreshControl
                 colors={['#225F78']}
@@ -207,12 +270,25 @@ const EventDetail = () => {
             <View className="flex">
               <Text className="text-xl font-rmedium">Choose tickets</Text>
               {eventDetails.venue.hasSeats ? (
-                <AvailabilityLegend />
+                <View>
+                  <SeatAvailability />
+                  <WebView
+                    startInLoadingState={true}
+                    ref={webViewRef}
+                    onTouchStart={() => setScrollEnabled(false)}
+                    onTouchEnd={() => setScrollEnabled(true)}
+                    className="w-96 h-96 my-2.5"
+                    scalesPageToFit={true}
+                    originWhitelist={['*']}
+                    onMessage={handleOnMessage}
+                    source={{ uri: 'http://192.168.1.112:5173/map' }}
+                  />
+                </View>
               ) : (
                 <View>
                   {prices.nodes.map(
                     (item: EventPriceCategory, index: number) => (
-                      <ChooseTicket
+                      <TicketSelection
                         ticketCount={ticketCount}
                         setTicketCount={setTicketCount}
                         tickets={tickets}
@@ -230,6 +306,7 @@ const EventDetail = () => {
             <View className="flex my-2.5">
               <Text className="text-xl font-rmedium">Tickets overview</Text>
               <TicketsOverview
+                handleSendMessage={handleSendMessage}
                 eventDetails={eventDetails}
                 discounts={discounts}
                 tickets={tickets}

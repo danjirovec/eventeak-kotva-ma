@@ -1,13 +1,13 @@
 import { View, Text } from 'react-native';
 import React from 'react';
 import Poster from './poster';
-import EventDatetime from './evetDatetime';
+import EventDatetime from './eventDatetime';
 import Tag from './tag';
-import SeeMore from './seeMoreButton';
+import MoreButton from './moreButton';
 import { icons } from '@/constants';
 import { Event } from '@/graphql/schema.types';
 
-const ListEvent = ({ item }: { item: Event }) => {
+const EventPreviewBox = ({ item }: { item: Event }) => {
   return (
     <View className="flex flex-row w-full h-64 py-2 bg-gray-100 rounded-lg">
       <View className="flex flex-col justify-between w-5/12 h-full">
@@ -28,11 +28,11 @@ const ListEvent = ({ item }: { item: Event }) => {
           </View>
         </View>
         <View className="flex items-end">
-          <SeeMore eventId={item.id} />
+          <MoreButton eventId={item.id} />
         </View>
       </View>
     </View>
   );
 };
 
-export default ListEvent;
+export default EventPreviewBox;

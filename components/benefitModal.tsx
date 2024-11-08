@@ -1,8 +1,6 @@
-import { View, Modal, Text, TouchableOpacity } from 'react-native';
-import React, { useEffect, useState } from 'react';
-import CustomButton from './customButton';
-import { Benefit, Discount } from '@/graphql/schema.types';
-import { TicketDetail } from '@/components/program/types';
+import { View, Modal, Text } from 'react-native';
+import React from 'react';
+import { Benefit } from '@/graphql/schema.types';
 import QRCode from 'react-native-qrcode-svg';
 import ExitButton from './exitButton';
 

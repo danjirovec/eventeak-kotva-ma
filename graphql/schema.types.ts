@@ -29,6 +29,11 @@ export type Scalars = {
   JSON: { input: any; output: any };
 };
 
+export type AnonymizeUser = {
+  businessId: Scalars['ID']['input'];
+  userId: Scalars['ID']['input'];
+};
+
 export type Benefit = {
   business: Business;
   created: Scalars['DateTime']['output'];
@@ -87,6 +92,7 @@ export type BenefitFilter = {
 export type BenefitFilterBusinessFilter = {
   and?: InputMaybe<Array<BenefitFilterBusinessFilter>>;
   created?: InputMaybe<DateFieldComparison>;
+  currency?: InputMaybe<CurrencyFilterComparison>;
   id?: InputMaybe<IdFilterComparison>;
   name?: InputMaybe<StringFieldComparison>;
   or?: InputMaybe<Array<BenefitFilterBusinessFilter>>;
@@ -132,13 +138,6 @@ export type BenefitUpdateFilter = {
   updated?: InputMaybe<DateFieldComparison>;
 };
 
-export type BenefitsAndMembership = {
-  available: Array<Benefit>;
-  membershipPoints: Scalars['Float']['output'];
-  unavailable: Array<Benefit>;
-  used: Array<Benefit>;
-};
-
 export type BooleanFieldComparison = {
   is?: InputMaybe<Scalars['Boolean']['input']>;
   isNot?: InputMaybe<Scalars['Boolean']['input']>;
@@ -147,6 +146,7 @@ export type BooleanFieldComparison = {
 export type Business = {
   apiKey: Scalars['String']['output'];
   created: Scalars['DateTime']['output'];
+  currency: Currency;
   id: Scalars['ID']['output'];
   logoUrl?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
@@ -165,6 +165,7 @@ export type BusinessConnection = {
 export type BusinessDeleteFilter = {
   and?: InputMaybe<Array<BusinessDeleteFilter>>;
   created?: InputMaybe<DateFieldComparison>;
+  currency?: InputMaybe<CurrencyFilterComparison>;
   id?: InputMaybe<IdFilterComparison>;
   name?: InputMaybe<StringFieldComparison>;
   or?: InputMaybe<Array<BusinessDeleteFilter>>;
@@ -174,6 +175,7 @@ export type BusinessDeleteFilter = {
 export type BusinessDeleteResponse = {
   apiKey?: Maybe<Scalars['String']['output']>;
   created?: Maybe<Scalars['DateTime']['output']>;
+  currency?: Maybe<Currency>;
   id?: Maybe<Scalars['ID']['output']>;
   logoUrl?: Maybe<Scalars['String']['output']>;
   name?: Maybe<Scalars['String']['output']>;
@@ -183,10 +185,17 @@ export type BusinessDeleteResponse = {
 export type BusinessFilter = {
   and?: InputMaybe<Array<BusinessFilter>>;
   created?: InputMaybe<DateFieldComparison>;
+  currency?: InputMaybe<CurrencyFilterComparison>;
   id?: InputMaybe<IdFilterComparison>;
   name?: InputMaybe<StringFieldComparison>;
   or?: InputMaybe<Array<BusinessFilter>>;
   updated?: InputMaybe<DateFieldComparison>;
+};
+
+export type BusinessMetrics = {
+  customers: Array<Scalars['Float']['output']>;
+  events: Array<Scalars['Float']['output']>;
+  memberships: Array<Scalars['Float']['output']>;
 };
 
 export type BusinessSort = {
@@ -195,11 +204,17 @@ export type BusinessSort = {
   nulls?: InputMaybe<SortNulls>;
 };
 
-export type BusinessSortFields = 'created' | 'id' | 'name' | 'updated';
+export type BusinessSortFields =
+  | 'created'
+  | 'currency'
+  | 'id'
+  | 'name'
+  | 'updated';
 
 export type BusinessSubscriptionFilter = {
   and?: InputMaybe<Array<BusinessSubscriptionFilter>>;
   created?: InputMaybe<DateFieldComparison>;
+  currency?: InputMaybe<CurrencyFilterComparison>;
   id?: InputMaybe<IdFilterComparison>;
   name?: InputMaybe<StringFieldComparison>;
   or?: InputMaybe<Array<BusinessSubscriptionFilter>>;
@@ -209,6 +224,7 @@ export type BusinessSubscriptionFilter = {
 export type BusinessUpdateFilter = {
   and?: InputMaybe<Array<BusinessUpdateFilter>>;
   created?: InputMaybe<DateFieldComparison>;
+  currency?: InputMaybe<CurrencyFilterComparison>;
   id?: InputMaybe<IdFilterComparison>;
   name?: InputMaybe<StringFieldComparison>;
   or?: InputMaybe<Array<BusinessUpdateFilter>>;
@@ -263,6 +279,7 @@ export type BusinessUserFilter = {
 export type BusinessUserFilterBusinessFilter = {
   and?: InputMaybe<Array<BusinessUserFilterBusinessFilter>>;
   created?: InputMaybe<DateFieldComparison>;
+  currency?: InputMaybe<CurrencyFilterComparison>;
   id?: InputMaybe<IdFilterComparison>;
   name?: InputMaybe<StringFieldComparison>;
   or?: InputMaybe<Array<BusinessUserFilterBusinessFilter>>;
@@ -274,6 +291,8 @@ export type BusinessUserFilterUserFilter = {
   avatarUrl?: InputMaybe<StringFieldComparison>;
   birthDate?: InputMaybe<DateFieldComparison>;
   created?: InputMaybe<DateFieldComparison>;
+  defaultBusinessId?: InputMaybe<StringFieldComparison>;
+  deleted?: InputMaybe<DateFieldComparison>;
   email?: InputMaybe<StringFieldComparison>;
   firstName?: InputMaybe<StringFieldComparison>;
   id?: InputMaybe<IdFilterComparison>;
@@ -345,12 +364,6 @@ export type CategoryFilterComparison = {
   notLike?: InputMaybe<Category>;
 };
 
-export type CountsBusiness = {
-  customers: Array<Scalars['Float']['output']>;
-  events: Array<Scalars['Float']['output']>;
-  memberships: Array<Scalars['Float']['output']>;
-};
-
 export type CreateBenefit = {
   businessId: Scalars['ID']['input'];
   description: Scalars['String']['input'];
@@ -365,6 +378,7 @@ export type CreateBenefitSubscriptionFilterInput = {
 };
 
 export type CreateBusiness = {
+  currency: Currency;
   logoUrl?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
   userId: Scalars['ID']['input'];
@@ -635,7 +649,7 @@ export type CreateOneVenueInput = {
 export type CreateOrder = {
   businessId: Scalars['ID']['input'];
   total: Scalars['Float']['input'];
-  userId: Scalars['ID']['input'];
+  userId?: InputMaybe<Scalars['ID']['input']>;
 };
 
 export type CreateOrderSubscriptionFilterInput = {
@@ -673,7 +687,12 @@ export type CreateTicket = {
   seatId?: InputMaybe<Scalars['ID']['input']>;
   sectionId: Scalars['ID']['input'];
   userId?: InputMaybe<Scalars['ID']['input']>;
-  validated: Scalars['Boolean']['input'];
+  validated?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
+export type CreateTicketOrder = {
+  order: CreateOrder;
+  tickets: Array<CreateTicket>;
 };
 
 export type CreateTicketSubscriptionFilterInput = {
@@ -720,6 +739,25 @@ export type CreateVenue = {
 export type CreateVenueSubscriptionFilterInput = {
   /** Specify to filter the records returned. */
   filter: VenueSubscriptionFilter;
+};
+
+export type Currency = 'CZK' | 'EUR' | 'USD';
+
+export type CurrencyFilterComparison = {
+  eq?: InputMaybe<Currency>;
+  gt?: InputMaybe<Currency>;
+  gte?: InputMaybe<Currency>;
+  iLike?: InputMaybe<Currency>;
+  in?: InputMaybe<Array<Currency>>;
+  is?: InputMaybe<Scalars['Boolean']['input']>;
+  isNot?: InputMaybe<Scalars['Boolean']['input']>;
+  like?: InputMaybe<Currency>;
+  lt?: InputMaybe<Currency>;
+  lte?: InputMaybe<Currency>;
+  neq?: InputMaybe<Currency>;
+  notILike?: InputMaybe<Currency>;
+  notIn?: InputMaybe<Array<Currency>>;
+  notLike?: InputMaybe<Currency>;
 };
 
 export type DateFieldComparison = {
@@ -1007,6 +1045,7 @@ export type DiscountConnection = {
 
 export type DiscountDeleteFilter = {
   and?: InputMaybe<Array<DiscountDeleteFilter>>;
+  businessId?: InputMaybe<StringFieldComparison>;
   created?: InputMaybe<DateFieldComparison>;
   id?: InputMaybe<IdFilterComparison>;
   name?: InputMaybe<StringFieldComparison>;
@@ -1026,6 +1065,7 @@ export type DiscountDeleteResponse = {
 export type DiscountFilter = {
   and?: InputMaybe<Array<DiscountFilter>>;
   business?: InputMaybe<DiscountFilterBusinessFilter>;
+  businessId?: InputMaybe<StringFieldComparison>;
   created?: InputMaybe<DateFieldComparison>;
   id?: InputMaybe<IdFilterComparison>;
   name?: InputMaybe<StringFieldComparison>;
@@ -1037,6 +1077,7 @@ export type DiscountFilter = {
 export type DiscountFilterBusinessFilter = {
   and?: InputMaybe<Array<DiscountFilterBusinessFilter>>;
   created?: InputMaybe<DateFieldComparison>;
+  currency?: InputMaybe<CurrencyFilterComparison>;
   id?: InputMaybe<IdFilterComparison>;
   name?: InputMaybe<StringFieldComparison>;
   or?: InputMaybe<Array<DiscountFilterBusinessFilter>>;
@@ -1050,6 +1091,7 @@ export type DiscountSort = {
 };
 
 export type DiscountSortFields =
+  | 'businessId'
   | 'created'
   | 'id'
   | 'name'
@@ -1058,6 +1100,7 @@ export type DiscountSortFields =
 
 export type DiscountSubscriptionFilter = {
   and?: InputMaybe<Array<DiscountSubscriptionFilter>>;
+  businessId?: InputMaybe<StringFieldComparison>;
   created?: InputMaybe<DateFieldComparison>;
   id?: InputMaybe<IdFilterComparison>;
   name?: InputMaybe<StringFieldComparison>;
@@ -1068,6 +1111,7 @@ export type DiscountSubscriptionFilter = {
 
 export type DiscountUpdateFilter = {
   and?: InputMaybe<Array<DiscountUpdateFilter>>;
+  businessId?: InputMaybe<StringFieldComparison>;
   created?: InputMaybe<DateFieldComparison>;
   id?: InputMaybe<IdFilterComparison>;
   name?: InputMaybe<StringFieldComparison>;
@@ -1094,6 +1138,14 @@ export type Event = {
   venueData?: Maybe<Scalars['JSON']['output']>;
 };
 
+export type EventCheckoutDto = {
+  discounts: Array<Discount>;
+  eventPriceCategories?: Maybe<EventPriceCategoryAvailable>;
+  events: Array<Event>;
+  tickets?: Maybe<Array<Ticket>>;
+  users: Array<User>;
+};
+
 export type EventConnection = {
   /** Array of nodes. */
   nodes: Array<Event>;
@@ -1109,6 +1161,7 @@ export type EventDeleteFilter = {
   category?: InputMaybe<CategoryFilterComparison>;
   created?: InputMaybe<DateFieldComparison>;
   date?: InputMaybe<DateFieldComparison>;
+  eventTemplateId?: InputMaybe<StringFieldComparison>;
   id?: InputMaybe<IdFilterComparison>;
   language?: InputMaybe<LanguageFilterComparison>;
   length?: InputMaybe<NumberFieldComparison>;
@@ -1141,6 +1194,7 @@ export type EventFilter = {
   created?: InputMaybe<DateFieldComparison>;
   date?: InputMaybe<DateFieldComparison>;
   eventTemplate?: InputMaybe<EventFilterEventTemplateFilter>;
+  eventTemplateId?: InputMaybe<StringFieldComparison>;
   id?: InputMaybe<IdFilterComparison>;
   language?: InputMaybe<LanguageFilterComparison>;
   length?: InputMaybe<NumberFieldComparison>;
@@ -1154,6 +1208,7 @@ export type EventFilter = {
 export type EventFilterBusinessFilter = {
   and?: InputMaybe<Array<EventFilterBusinessFilter>>;
   created?: InputMaybe<DateFieldComparison>;
+  currency?: InputMaybe<CurrencyFilterComparison>;
   id?: InputMaybe<IdFilterComparison>;
   name?: InputMaybe<StringFieldComparison>;
   or?: InputMaybe<Array<EventFilterBusinessFilter>>;
@@ -1179,6 +1234,7 @@ export type EventFilterEventTemplateFilter = {
 export type EventFilterEventTemplateFilterBusinessFilter = {
   and?: InputMaybe<Array<EventFilterEventTemplateFilterBusinessFilter>>;
   created?: InputMaybe<DateFieldComparison>;
+  currency?: InputMaybe<CurrencyFilterComparison>;
   id?: InputMaybe<IdFilterComparison>;
   name?: InputMaybe<StringFieldComparison>;
   or?: InputMaybe<Array<EventFilterEventTemplateFilterBusinessFilter>>;
@@ -1217,6 +1273,7 @@ export type EventFilterVenueFilter = {
 export type EventFilterVenueFilterBusinessFilter = {
   and?: InputMaybe<Array<EventFilterVenueFilterBusinessFilter>>;
   created?: InputMaybe<DateFieldComparison>;
+  currency?: InputMaybe<CurrencyFilterComparison>;
   id?: InputMaybe<IdFilterComparison>;
   name?: InputMaybe<StringFieldComparison>;
   or?: InputMaybe<Array<EventFilterVenueFilterBusinessFilter>>;
@@ -1370,6 +1427,7 @@ export type EventSortFields =
   | 'category'
   | 'created'
   | 'date'
+  | 'eventTemplateId'
   | 'id'
   | 'language'
   | 'length'
@@ -1383,6 +1441,7 @@ export type EventSubscriptionFilter = {
   category?: InputMaybe<CategoryFilterComparison>;
   created?: InputMaybe<DateFieldComparison>;
   date?: InputMaybe<DateFieldComparison>;
+  eventTemplateId?: InputMaybe<StringFieldComparison>;
   id?: InputMaybe<IdFilterComparison>;
   language?: InputMaybe<LanguageFilterComparison>;
   length?: InputMaybe<NumberFieldComparison>;
@@ -1464,6 +1523,7 @@ export type EventTemplateFilter = {
 export type EventTemplateFilterBusinessFilter = {
   and?: InputMaybe<Array<EventTemplateFilterBusinessFilter>>;
   created?: InputMaybe<DateFieldComparison>;
+  currency?: InputMaybe<CurrencyFilterComparison>;
   id?: InputMaybe<IdFilterComparison>;
   name?: InputMaybe<StringFieldComparison>;
   or?: InputMaybe<Array<EventTemplateFilterBusinessFilter>>;
@@ -1535,6 +1595,7 @@ export type EventUpdateFilter = {
   category?: InputMaybe<CategoryFilterComparison>;
   created?: InputMaybe<DateFieldComparison>;
   date?: InputMaybe<DateFieldComparison>;
+  eventTemplateId?: InputMaybe<StringFieldComparison>;
   id?: InputMaybe<IdFilterComparison>;
   language?: InputMaybe<LanguageFilterComparison>;
   length?: InputMaybe<NumberFieldComparison>;
@@ -1652,6 +1713,7 @@ export type MembershipFilter = {
 export type MembershipFilterBusinessFilter = {
   and?: InputMaybe<Array<MembershipFilterBusinessFilter>>;
   created?: InputMaybe<DateFieldComparison>;
+  currency?: InputMaybe<CurrencyFilterComparison>;
   id?: InputMaybe<IdFilterComparison>;
   name?: InputMaybe<StringFieldComparison>;
   or?: InputMaybe<Array<MembershipFilterBusinessFilter>>;
@@ -1672,6 +1734,8 @@ export type MembershipFilterUserFilter = {
   avatarUrl?: InputMaybe<StringFieldComparison>;
   birthDate?: InputMaybe<DateFieldComparison>;
   created?: InputMaybe<DateFieldComparison>;
+  defaultBusinessId?: InputMaybe<StringFieldComparison>;
+  deleted?: InputMaybe<DateFieldComparison>;
   email?: InputMaybe<StringFieldComparison>;
   firstName?: InputMaybe<StringFieldComparison>;
   id?: InputMaybe<IdFilterComparison>;
@@ -1754,6 +1818,7 @@ export type MembershipTypeFilter = {
 export type MembershipTypeFilterBusinessFilter = {
   and?: InputMaybe<Array<MembershipTypeFilterBusinessFilter>>;
   created?: InputMaybe<DateFieldComparison>;
+  currency?: InputMaybe<CurrencyFilterComparison>;
   id?: InputMaybe<IdFilterComparison>;
   name?: InputMaybe<StringFieldComparison>;
   or?: InputMaybe<Array<MembershipTypeFilterBusinessFilter>>;
@@ -1799,9 +1864,10 @@ export type MembershipUpdateFilter = {
 };
 
 export type Mutation = {
-  createBusinessAndBusinessUserAdmin: Business;
+  anonymizeUser: Scalars['String']['output'];
+  createBusiness: Business;
   createEvent: Event;
-  createEventTemplateAndEventPriceCategory: EventTemplate;
+  createEventTemplate: EventTemplate;
   createManyBenefits: Array<Benefit>;
   createManyBusinessUsers: Array<BusinessUser>;
   createManyBusinesses: Array<Business>;
@@ -1834,8 +1900,8 @@ export type Mutation = {
   createOneUser: User;
   createOneUserBenefitDto: UserBenefitDto;
   createOneVenue: Venue;
-  createTicketsAndOrder: Array<Ticket>;
-  createVenueWithSeats: Venue;
+  createTickets: Event;
+  createVenue: Venue;
   deleteManyBenefits: DeleteManyResponse;
   deleteManyBusinessUsers: DeleteManyResponse;
   deleteManyBusinesses: DeleteManyResponse;
@@ -1869,7 +1935,7 @@ export type Mutation = {
   deleteOneUserBenefitDto: UserBenefitDtoDeleteResponse;
   deleteOneVenue: VenueDeleteResponse;
   updateEvent: Event;
-  updateEventTemplateAndEventPriceCategory: EventTemplate;
+  updateEventTemplate: EventTemplate;
   updateManyBenefits: UpdateManyResponse;
   updateManyBusinessUsers: UpdateManyResponse;
   updateManyBusinesses: UpdateManyResponse;
@@ -1902,10 +1968,14 @@ export type Mutation = {
   updateOneUser: User;
   updateOneUserBenefitDto: UserBenefitDto;
   updateOneVenue: Venue;
-  updateUserPassword: Scalars['String']['output'];
+  updatePassword: Scalars['String']['output'];
 };
 
-export type MutationCreateBusinessAndBusinessUserAdminArgs = {
+export type MutationAnonymizeUserArgs = {
+  input: AnonymizeUser;
+};
+
+export type MutationCreateBusinessArgs = {
   input: CreateBusiness;
 };
 
@@ -1913,7 +1983,7 @@ export type MutationCreateEventArgs = {
   input: CreateEvent;
 };
 
-export type MutationCreateEventTemplateAndEventPriceCategoryArgs = {
+export type MutationCreateEventTemplateArgs = {
   input: CreateEventTemplate;
 };
 
@@ -2045,12 +2115,11 @@ export type MutationCreateOneVenueArgs = {
   input: CreateOneVenueInput;
 };
 
-export type MutationCreateTicketsAndOrderArgs = {
-  order: CreateOrder;
-  tickets: Array<CreateTicket>;
+export type MutationCreateTicketsArgs = {
+  input: CreateTicketOrder;
 };
 
-export type MutationCreateVenueWithSeatsArgs = {
+export type MutationCreateVenueArgs = {
   input: CreateVenue;
 };
 
@@ -2186,7 +2255,7 @@ export type MutationUpdateEventArgs = {
   input: UpdateEvent;
 };
 
-export type MutationUpdateEventTemplateAndEventPriceCategoryArgs = {
+export type MutationUpdateEventTemplateArgs = {
   input: UpdateEventTemplate;
 };
 
@@ -2318,8 +2387,8 @@ export type MutationUpdateOneVenueArgs = {
   input: UpdateOneVenueInput;
 };
 
-export type MutationUpdateUserPasswordArgs = {
-  input: UpdateUserPassword;
+export type MutationUpdatePasswordArgs = {
+  input: UpdatePassword;
 };
 
 export type NumberFieldComparison = {
@@ -2362,7 +2431,7 @@ export type Order = {
   id: Scalars['ID']['output'];
   total: Scalars['Float']['output'];
   updated: Scalars['DateTime']['output'];
-  user: User;
+  user?: Maybe<User>;
 };
 
 export type OrderConnection = {
@@ -2408,6 +2477,7 @@ export type OrderFilter = {
 export type OrderFilterBusinessFilter = {
   and?: InputMaybe<Array<OrderFilterBusinessFilter>>;
   created?: InputMaybe<DateFieldComparison>;
+  currency?: InputMaybe<CurrencyFilterComparison>;
   id?: InputMaybe<IdFilterComparison>;
   name?: InputMaybe<StringFieldComparison>;
   or?: InputMaybe<Array<OrderFilterBusinessFilter>>;
@@ -2419,6 +2489,8 @@ export type OrderFilterUserFilter = {
   avatarUrl?: InputMaybe<StringFieldComparison>;
   birthDate?: InputMaybe<DateFieldComparison>;
   created?: InputMaybe<DateFieldComparison>;
+  defaultBusinessId?: InputMaybe<StringFieldComparison>;
+  deleted?: InputMaybe<DateFieldComparison>;
   email?: InputMaybe<StringFieldComparison>;
   firstName?: InputMaybe<StringFieldComparison>;
   id?: InputMaybe<IdFilterComparison>;
@@ -2467,9 +2539,7 @@ export type OrderUpdateFilter = {
 export type Query = {
   benefit: Benefit;
   benefits: BenefitConnection;
-  benefitsAndMembership: BenefitsAndMembership;
   business: Business;
-  businessCounts: CountsBusiness;
   businessUser: BusinessUser;
   businessUsers: BusinessUserConnection;
   businesses: BusinessConnection;
@@ -2481,14 +2551,19 @@ export type Query = {
   eventTemplate: EventTemplate;
   eventTemplates: EventTemplateConnection;
   events: EventConnection;
+  getBusinessMetrics: BusinessMetrics;
+  getEventCheckout: EventCheckoutDto;
+  getEventPrices: EventPriceCategoryAvailable;
+  getUserBenefits: UserBenefits;
+  getUserBusinesses: BusinessConnection;
+  getUserTickets: TicketSet;
   membership: Membership;
   membershipType: MembershipType;
   membershipTypes: MembershipTypeConnection;
   memberships: MembershipConnection;
   order: Order;
   orders: OrderConnection;
-  prices: EventPriceCategoryAvailable;
-  profile: UserProfile;
+  profileInfo: UserProfile;
   seat: Seat;
   seats: SeatConnection;
   section: Section;
@@ -2499,8 +2574,6 @@ export type Query = {
   user: User;
   userBenefitDto: UserBenefitDto;
   userBenefitDtos: UserBenefitDtoConnection;
-  userBusinesses: BusinessConnection;
-  userTickets: TicketSet;
   users: UserConnection;
   venue: Venue;
   venues: VenueConnection;
@@ -2516,19 +2589,8 @@ export type QueryBenefitsArgs = {
   sorting?: Array<BenefitSort>;
 };
 
-export type QueryBenefitsAndMembershipArgs = {
-  filter?: BenefitFilter;
-  meta: Scalars['String']['input'];
-  paging?: OffsetPaging;
-  sorting?: Array<BenefitSort>;
-};
-
 export type QueryBusinessArgs = {
   id: Scalars['ID']['input'];
-};
-
-export type QueryBusinessCountsArgs = {
-  meta?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type QueryBusinessUserArgs = {
@@ -2587,6 +2649,41 @@ export type QueryEventsArgs = {
   sorting?: Array<EventSort>;
 };
 
+export type QueryGetBusinessMetricsArgs = {
+  meta: Scalars['String']['input'];
+};
+
+export type QueryGetEventCheckoutArgs = {
+  meta: Scalars['String']['input'];
+};
+
+export type QueryGetEventPricesArgs = {
+  filter?: EventPriceCategoryFilter;
+  meta: Scalars['String']['input'];
+  paging?: OffsetPaging;
+  sorting?: Array<EventPriceCategorySort>;
+};
+
+export type QueryGetUserBenefitsArgs = {
+  filter?: BenefitFilter;
+  meta: Scalars['String']['input'];
+  paging?: OffsetPaging;
+  sorting?: Array<BenefitSort>;
+};
+
+export type QueryGetUserBusinessesArgs = {
+  filter?: BusinessFilter;
+  meta: Scalars['String']['input'];
+  paging?: OffsetPaging;
+  sorting?: Array<BusinessSort>;
+};
+
+export type QueryGetUserTicketsArgs = {
+  filter?: TicketFilter;
+  paging?: OffsetPaging;
+  sorting?: Array<TicketSort>;
+};
+
 export type QueryMembershipArgs = {
   id: Scalars['ID']['input'];
 };
@@ -2617,14 +2714,7 @@ export type QueryOrdersArgs = {
   sorting?: Array<OrderSort>;
 };
 
-export type QueryPricesArgs = {
-  filter?: EventPriceCategoryFilter;
-  meta?: InputMaybe<Scalars['String']['input']>;
-  paging?: OffsetPaging;
-  sorting?: Array<EventPriceCategorySort>;
-};
-
-export type QueryProfileArgs = {
+export type QueryProfileInfoArgs = {
   filter?: UserFilter;
   meta: Scalars['String']['input'];
   paging?: OffsetPaging;
@@ -2677,19 +2767,6 @@ export type QueryUserBenefitDtosArgs = {
   filter?: UserBenefitDtoFilter;
   paging?: OffsetPaging;
   sorting?: Array<UserBenefitDtoSort>;
-};
-
-export type QueryUserBusinessesArgs = {
-  filter?: BusinessFilter;
-  meta: Scalars['String']['input'];
-  paging?: OffsetPaging;
-  sorting?: Array<BusinessSort>;
-};
-
-export type QueryUserTicketsArgs = {
-  filter?: TicketFilter;
-  paging?: OffsetPaging;
-  sorting?: Array<TicketSort>;
 };
 
 export type QueryUsersArgs = {
@@ -3251,12 +3328,7 @@ export type Ticket = {
   section: Section;
   updated: Scalars['DateTime']['output'];
   user?: Maybe<User>;
-  validated: Scalars['Boolean']['output'];
-};
-
-export type TicketAgg = {
-  id: Scalars['ID']['output'];
-  ticketSet: Array<Ticket>;
+  validated?: Maybe<Scalars['DateTime']['output']>;
 };
 
 export type TicketAggregateFilter = {
@@ -3272,17 +3344,19 @@ export type TicketAggregateFilter = {
   order?: InputMaybe<TicketAggregateFilterOrderAggregateFilter>;
   price?: InputMaybe<NumberFieldComparison>;
   seat?: InputMaybe<TicketAggregateFilterSeatAggregateFilter>;
+  seatId?: InputMaybe<StringFieldComparison>;
   section?: InputMaybe<TicketAggregateFilterSectionAggregateFilter>;
   sectionId?: InputMaybe<StringFieldComparison>;
   updated?: InputMaybe<DateFieldComparison>;
   user?: InputMaybe<TicketAggregateFilterUserAggregateFilter>;
   userId?: InputMaybe<StringFieldComparison>;
-  validated?: InputMaybe<BooleanFieldComparison>;
+  validated?: InputMaybe<DateFieldComparison>;
 };
 
 export type TicketAggregateFilterBusinessAggregateFilter = {
   and?: InputMaybe<Array<TicketAggregateFilterBusinessAggregateFilter>>;
   created?: InputMaybe<DateFieldComparison>;
+  currency?: InputMaybe<CurrencyFilterComparison>;
   id?: InputMaybe<IdFilterComparison>;
   name?: InputMaybe<StringFieldComparison>;
   or?: InputMaybe<Array<TicketAggregateFilterBusinessAggregateFilter>>;
@@ -3291,6 +3365,7 @@ export type TicketAggregateFilterBusinessAggregateFilter = {
 
 export type TicketAggregateFilterDiscountAggregateFilter = {
   and?: InputMaybe<Array<TicketAggregateFilterDiscountAggregateFilter>>;
+  businessId?: InputMaybe<StringFieldComparison>;
   created?: InputMaybe<DateFieldComparison>;
   id?: InputMaybe<IdFilterComparison>;
   name?: InputMaybe<StringFieldComparison>;
@@ -3305,6 +3380,7 @@ export type TicketAggregateFilterEventAggregateFilter = {
   category?: InputMaybe<CategoryFilterComparison>;
   created?: InputMaybe<DateFieldComparison>;
   date?: InputMaybe<DateFieldComparison>;
+  eventTemplateId?: InputMaybe<StringFieldComparison>;
   id?: InputMaybe<IdFilterComparison>;
   language?: InputMaybe<LanguageFilterComparison>;
   length?: InputMaybe<NumberFieldComparison>;
@@ -3352,6 +3428,8 @@ export type TicketAggregateFilterUserAggregateFilter = {
   avatarUrl?: InputMaybe<StringFieldComparison>;
   birthDate?: InputMaybe<DateFieldComparison>;
   created?: InputMaybe<DateFieldComparison>;
+  defaultBusinessId?: InputMaybe<StringFieldComparison>;
+  deleted?: InputMaybe<DateFieldComparison>;
   email?: InputMaybe<StringFieldComparison>;
   firstName?: InputMaybe<StringFieldComparison>;
   id?: InputMaybe<IdFilterComparison>;
@@ -3367,10 +3445,11 @@ export type TicketAggregateGroupBy = {
   eventId?: Maybe<Scalars['String']['output']>;
   id?: Maybe<Scalars['ID']['output']>;
   price?: Maybe<Scalars['Float']['output']>;
+  seatId?: Maybe<Scalars['String']['output']>;
   sectionId?: Maybe<Scalars['String']['output']>;
   updated?: Maybe<Scalars['DateTime']['output']>;
   userId?: Maybe<Scalars['String']['output']>;
-  validated?: Maybe<Scalars['Boolean']['output']>;
+  validated?: Maybe<Scalars['DateTime']['output']>;
 };
 
 export type TicketAggregateGroupByCreatedArgs = {
@@ -3378,6 +3457,10 @@ export type TicketAggregateGroupByCreatedArgs = {
 };
 
 export type TicketAggregateGroupByUpdatedArgs = {
+  by?: GroupBy;
+};
+
+export type TicketAggregateGroupByValidatedArgs = {
   by?: GroupBy;
 };
 
@@ -3409,6 +3492,7 @@ export type TicketCountAggregate = {
   eventId?: Maybe<Scalars['Int']['output']>;
   id?: Maybe<Scalars['Int']['output']>;
   price?: Maybe<Scalars['Int']['output']>;
+  seatId?: Maybe<Scalars['Int']['output']>;
   sectionId?: Maybe<Scalars['Int']['output']>;
   updated?: Maybe<Scalars['Int']['output']>;
   userId?: Maybe<Scalars['Int']['output']>;
@@ -3423,10 +3507,11 @@ export type TicketDeleteFilter = {
   id?: InputMaybe<IdFilterComparison>;
   or?: InputMaybe<Array<TicketDeleteFilter>>;
   price?: InputMaybe<NumberFieldComparison>;
+  seatId?: InputMaybe<StringFieldComparison>;
   sectionId?: InputMaybe<StringFieldComparison>;
   updated?: InputMaybe<DateFieldComparison>;
   userId?: InputMaybe<StringFieldComparison>;
-  validated?: InputMaybe<BooleanFieldComparison>;
+  validated?: InputMaybe<DateFieldComparison>;
 };
 
 export type TicketDeleteResponse = {
@@ -3434,7 +3519,7 @@ export type TicketDeleteResponse = {
   id?: Maybe<Scalars['ID']['output']>;
   price?: Maybe<Scalars['Float']['output']>;
   updated?: Maybe<Scalars['DateTime']['output']>;
-  validated?: Maybe<Scalars['Boolean']['output']>;
+  validated?: Maybe<Scalars['DateTime']['output']>;
 };
 
 export type TicketFilter = {
@@ -3450,17 +3535,19 @@ export type TicketFilter = {
   order?: InputMaybe<TicketFilterOrderFilter>;
   price?: InputMaybe<NumberFieldComparison>;
   seat?: InputMaybe<TicketFilterSeatFilter>;
+  seatId?: InputMaybe<StringFieldComparison>;
   section?: InputMaybe<TicketFilterSectionFilter>;
   sectionId?: InputMaybe<StringFieldComparison>;
   updated?: InputMaybe<DateFieldComparison>;
   user?: InputMaybe<TicketFilterUserFilter>;
   userId?: InputMaybe<StringFieldComparison>;
-  validated?: InputMaybe<BooleanFieldComparison>;
+  validated?: InputMaybe<DateFieldComparison>;
 };
 
 export type TicketFilterBusinessFilter = {
   and?: InputMaybe<Array<TicketFilterBusinessFilter>>;
   created?: InputMaybe<DateFieldComparison>;
+  currency?: InputMaybe<CurrencyFilterComparison>;
   id?: InputMaybe<IdFilterComparison>;
   name?: InputMaybe<StringFieldComparison>;
   or?: InputMaybe<Array<TicketFilterBusinessFilter>>;
@@ -3469,6 +3556,7 @@ export type TicketFilterBusinessFilter = {
 
 export type TicketFilterDiscountFilter = {
   and?: InputMaybe<Array<TicketFilterDiscountFilter>>;
+  businessId?: InputMaybe<StringFieldComparison>;
   created?: InputMaybe<DateFieldComparison>;
   id?: InputMaybe<IdFilterComparison>;
   name?: InputMaybe<StringFieldComparison>;
@@ -3483,6 +3571,7 @@ export type TicketFilterEventFilter = {
   category?: InputMaybe<CategoryFilterComparison>;
   created?: InputMaybe<DateFieldComparison>;
   date?: InputMaybe<DateFieldComparison>;
+  eventTemplateId?: InputMaybe<StringFieldComparison>;
   id?: InputMaybe<IdFilterComparison>;
   language?: InputMaybe<LanguageFilterComparison>;
   length?: InputMaybe<NumberFieldComparison>;
@@ -3530,6 +3619,8 @@ export type TicketFilterUserFilter = {
   avatarUrl?: InputMaybe<StringFieldComparison>;
   birthDate?: InputMaybe<DateFieldComparison>;
   created?: InputMaybe<DateFieldComparison>;
+  defaultBusinessId?: InputMaybe<StringFieldComparison>;
+  deleted?: InputMaybe<DateFieldComparison>;
   email?: InputMaybe<StringFieldComparison>;
   firstName?: InputMaybe<StringFieldComparison>;
   id?: InputMaybe<IdFilterComparison>;
@@ -3545,9 +3636,11 @@ export type TicketMaxAggregate = {
   eventId?: Maybe<Scalars['String']['output']>;
   id?: Maybe<Scalars['ID']['output']>;
   price?: Maybe<Scalars['Float']['output']>;
+  seatId?: Maybe<Scalars['String']['output']>;
   sectionId?: Maybe<Scalars['String']['output']>;
   updated?: Maybe<Scalars['DateTime']['output']>;
   userId?: Maybe<Scalars['String']['output']>;
+  validated?: Maybe<Scalars['DateTime']['output']>;
 };
 
 export type TicketMinAggregate = {
@@ -3556,14 +3649,16 @@ export type TicketMinAggregate = {
   eventId?: Maybe<Scalars['String']['output']>;
   id?: Maybe<Scalars['ID']['output']>;
   price?: Maybe<Scalars['Float']['output']>;
+  seatId?: Maybe<Scalars['String']['output']>;
   sectionId?: Maybe<Scalars['String']['output']>;
   updated?: Maybe<Scalars['DateTime']['output']>;
   userId?: Maybe<Scalars['String']['output']>;
+  validated?: Maybe<Scalars['DateTime']['output']>;
 };
 
 export type TicketSet = {
-  invalid: Array<TicketAgg>;
-  valid: Array<TicketAgg>;
+  invalid: Array<UserTickets>;
+  valid: Array<UserTickets>;
 };
 
 export type TicketSort = {
@@ -3578,6 +3673,7 @@ export type TicketSortFields =
   | 'eventId'
   | 'id'
   | 'price'
+  | 'seatId'
   | 'sectionId'
   | 'updated'
   | 'userId'
@@ -3591,10 +3687,11 @@ export type TicketSubscriptionFilter = {
   id?: InputMaybe<IdFilterComparison>;
   or?: InputMaybe<Array<TicketSubscriptionFilter>>;
   price?: InputMaybe<NumberFieldComparison>;
+  seatId?: InputMaybe<StringFieldComparison>;
   sectionId?: InputMaybe<StringFieldComparison>;
   updated?: InputMaybe<DateFieldComparison>;
   userId?: InputMaybe<StringFieldComparison>;
-  validated?: InputMaybe<BooleanFieldComparison>;
+  validated?: InputMaybe<DateFieldComparison>;
 };
 
 export type TicketSumAggregate = {
@@ -3609,10 +3706,11 @@ export type TicketUpdateFilter = {
   id?: InputMaybe<IdFilterComparison>;
   or?: InputMaybe<Array<TicketUpdateFilter>>;
   price?: InputMaybe<NumberFieldComparison>;
+  seatId?: InputMaybe<StringFieldComparison>;
   sectionId?: InputMaybe<StringFieldComparison>;
   updated?: InputMaybe<DateFieldComparison>;
   userId?: InputMaybe<StringFieldComparison>;
-  validated?: InputMaybe<BooleanFieldComparison>;
+  validated?: InputMaybe<DateFieldComparison>;
 };
 
 export type UpdateBenefit = {
@@ -3625,6 +3723,7 @@ export type UpdateBenefit = {
 export type UpdateBusiness = {
   apiKey?: InputMaybe<Scalars['String']['input']>;
   created?: InputMaybe<Scalars['DateTime']['input']>;
+  currency?: InputMaybe<Currency>;
   id?: InputMaybe<Scalars['ID']['input']>;
   logoUrl?: InputMaybe<Scalars['String']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
@@ -4013,6 +4112,11 @@ export type UpdateOrder = {
   updated?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
+export type UpdatePassword = {
+  password: Scalars['String']['input'];
+  userId: Scalars['ID']['input'];
+};
+
 export type UpdateSeat = {
   created?: InputMaybe<Scalars['DateTime']['input']>;
   id?: InputMaybe<Scalars['ID']['input']>;
@@ -4030,16 +4134,19 @@ export type UpdateSection = {
 };
 
 export type UpdateTicket = {
-  created?: InputMaybe<Scalars['DateTime']['input']>;
-  id?: InputMaybe<Scalars['ID']['input']>;
+  discountId?: InputMaybe<Scalars['ID']['input']>;
+  eventId?: InputMaybe<Scalars['ID']['input']>;
   price?: InputMaybe<Scalars['Float']['input']>;
-  updated?: InputMaybe<Scalars['DateTime']['input']>;
-  validated?: InputMaybe<Scalars['Boolean']['input']>;
+  seatId?: InputMaybe<Scalars['ID']['input']>;
+  sectionId?: InputMaybe<Scalars['ID']['input']>;
+  userId?: InputMaybe<Scalars['ID']['input']>;
+  validated?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
 export type UpdateUser = {
   avatarUrl?: InputMaybe<Scalars['String']['input']>;
   defaultBusinessId?: InputMaybe<Scalars['ID']['input']>;
+  deleted?: InputMaybe<Scalars['DateTime']['input']>;
   email?: InputMaybe<Scalars['String']['input']>;
   firstName?: InputMaybe<Scalars['String']['input']>;
   lastName?: InputMaybe<Scalars['String']['input']>;
@@ -4048,11 +4155,6 @@ export type UpdateUser = {
 
 export type UpdateUserBenefitDto = {
   created?: InputMaybe<Scalars['DateTime']['input']>;
-};
-
-export type UpdateUserPassword = {
-  password: Scalars['String']['input'];
-  userId: Scalars['ID']['input'];
 };
 
 export type UpdateVenue = {
@@ -4073,6 +4175,7 @@ export type User = {
   birthDate: Scalars['DateTime']['output'];
   created: Scalars['DateTime']['output'];
   defaultBusiness?: Maybe<Business>;
+  deleted?: Maybe<Scalars['DateTime']['output']>;
   email: Scalars['String']['output'];
   firstName: Scalars['String']['output'];
   id: Scalars['ID']['output'];
@@ -4137,6 +4240,7 @@ export type UserBenefitDtoFilterBenefitFilter = {
 export type UserBenefitDtoFilterBusinessFilter = {
   and?: InputMaybe<Array<UserBenefitDtoFilterBusinessFilter>>;
   created?: InputMaybe<DateFieldComparison>;
+  currency?: InputMaybe<CurrencyFilterComparison>;
   id?: InputMaybe<IdFilterComparison>;
   name?: InputMaybe<StringFieldComparison>;
   or?: InputMaybe<Array<UserBenefitDtoFilterBusinessFilter>>;
@@ -4148,6 +4252,8 @@ export type UserBenefitDtoFilterUserFilter = {
   avatarUrl?: InputMaybe<StringFieldComparison>;
   birthDate?: InputMaybe<DateFieldComparison>;
   created?: InputMaybe<DateFieldComparison>;
+  defaultBusinessId?: InputMaybe<StringFieldComparison>;
+  deleted?: InputMaybe<DateFieldComparison>;
   email?: InputMaybe<StringFieldComparison>;
   firstName?: InputMaybe<StringFieldComparison>;
   id?: InputMaybe<IdFilterComparison>;
@@ -4187,6 +4293,13 @@ export type UserBenefitDtoUpdateFilter = {
   userId?: InputMaybe<StringFieldComparison>;
 };
 
+export type UserBenefits = {
+  available: Array<Benefit>;
+  membershipPoints: Scalars['Float']['output'];
+  unavailable: Array<Benefit>;
+  used: Array<Benefit>;
+};
+
 export type UserConnection = {
   /** Array of nodes. */
   nodes: Array<User>;
@@ -4201,6 +4314,8 @@ export type UserDeleteFilter = {
   avatarUrl?: InputMaybe<StringFieldComparison>;
   birthDate?: InputMaybe<DateFieldComparison>;
   created?: InputMaybe<DateFieldComparison>;
+  defaultBusinessId?: InputMaybe<StringFieldComparison>;
+  deleted?: InputMaybe<DateFieldComparison>;
   email?: InputMaybe<StringFieldComparison>;
   firstName?: InputMaybe<StringFieldComparison>;
   id?: InputMaybe<IdFilterComparison>;
@@ -4214,6 +4329,7 @@ export type UserDeleteResponse = {
   avatarUrl?: Maybe<Scalars['String']['output']>;
   birthDate?: Maybe<Scalars['DateTime']['output']>;
   created?: Maybe<Scalars['DateTime']['output']>;
+  deleted?: Maybe<Scalars['DateTime']['output']>;
   email?: Maybe<Scalars['String']['output']>;
   firstName?: Maybe<Scalars['String']['output']>;
   id?: Maybe<Scalars['ID']['output']>;
@@ -4228,6 +4344,8 @@ export type UserFilter = {
   birthDate?: InputMaybe<DateFieldComparison>;
   created?: InputMaybe<DateFieldComparison>;
   defaultBusiness?: InputMaybe<UserFilterBusinessFilter>;
+  defaultBusinessId?: InputMaybe<StringFieldComparison>;
+  deleted?: InputMaybe<DateFieldComparison>;
   email?: InputMaybe<StringFieldComparison>;
   firstName?: InputMaybe<StringFieldComparison>;
   id?: InputMaybe<IdFilterComparison>;
@@ -4240,6 +4358,7 @@ export type UserFilter = {
 export type UserFilterBusinessFilter = {
   and?: InputMaybe<Array<UserFilterBusinessFilter>>;
   created?: InputMaybe<DateFieldComparison>;
+  currency?: InputMaybe<CurrencyFilterComparison>;
   id?: InputMaybe<IdFilterComparison>;
   name?: InputMaybe<StringFieldComparison>;
   or?: InputMaybe<Array<UserFilterBusinessFilter>>;
@@ -4270,6 +4389,8 @@ export type UserSortFields =
   | 'avatarUrl'
   | 'birthDate'
   | 'created'
+  | 'defaultBusinessId'
+  | 'deleted'
   | 'email'
   | 'firstName'
   | 'id'
@@ -4282,6 +4403,8 @@ export type UserSubscriptionFilter = {
   avatarUrl?: InputMaybe<StringFieldComparison>;
   birthDate?: InputMaybe<DateFieldComparison>;
   created?: InputMaybe<DateFieldComparison>;
+  defaultBusinessId?: InputMaybe<StringFieldComparison>;
+  deleted?: InputMaybe<DateFieldComparison>;
   email?: InputMaybe<StringFieldComparison>;
   firstName?: InputMaybe<StringFieldComparison>;
   id?: InputMaybe<IdFilterComparison>;
@@ -4291,11 +4414,18 @@ export type UserSubscriptionFilter = {
   updated?: InputMaybe<DateFieldComparison>;
 };
 
+export type UserTickets = {
+  id: Scalars['ID']['output'];
+  ticketSet: Array<Ticket>;
+};
+
 export type UserUpdateFilter = {
   and?: InputMaybe<Array<UserUpdateFilter>>;
   avatarUrl?: InputMaybe<StringFieldComparison>;
   birthDate?: InputMaybe<DateFieldComparison>;
   created?: InputMaybe<DateFieldComparison>;
+  defaultBusinessId?: InputMaybe<StringFieldComparison>;
+  deleted?: InputMaybe<DateFieldComparison>;
   email?: InputMaybe<StringFieldComparison>;
   firstName?: InputMaybe<StringFieldComparison>;
   id?: InputMaybe<IdFilterComparison>;
@@ -4373,6 +4503,7 @@ export type VenueFilter = {
 export type VenueFilterBusinessFilter = {
   and?: InputMaybe<Array<VenueFilterBusinessFilter>>;
   created?: InputMaybe<DateFieldComparison>;
+  currency?: InputMaybe<CurrencyFilterComparison>;
   id?: InputMaybe<IdFilterComparison>;
   name?: InputMaybe<StringFieldComparison>;
   or?: InputMaybe<Array<VenueFilterBusinessFilter>>;

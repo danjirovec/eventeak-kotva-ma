@@ -16,8 +16,8 @@ export const UPDATE_USER_MUTATION = gql`
 `;
 
 export const UPDATE_USER_PASSWORD_MUTATION = gql`
-  mutation UpdateUserPassword($input: UpdateUserPassword!) {
-    updateUserPassword(input: $input)
+  mutation UpdateUserPassword($input: UpdatePassword!) {
+    updatePassword(input: $input)
   }
 `;
 
@@ -46,35 +46,9 @@ export const CREATE_TICKET_MUTATION = gql`
 `;
 
 export const CREATE_TICKET_AND_ORDER_MUTATION = gql`
-  mutation CreateTicketsAndOrder(
-    $tickets: [CreateTicket!]!
-    $order: CreateOrder!
-  ) {
-    createTicketsAndOrder(tickets: $tickets, order: $order) {
+  mutation CreateTickets($input: CreateTicketOrder!) {
+    createTickets(input: $input) {
       id
-      price
-      discount {
-        id
-      }
-      event {
-        id
-        name
-      }
-      section {
-        id
-        name
-      }
-      seat {
-        id
-      }
-      user {
-        id
-      }
-      order {
-        id
-        total
-      }
-      validated
     }
   }
 `;

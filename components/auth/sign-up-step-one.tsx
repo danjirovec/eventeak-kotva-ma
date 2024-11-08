@@ -1,5 +1,5 @@
 import { View, Text } from 'react-native';
-import React, { useState } from 'react';
+import React from 'react';
 import FormField from '@/components/formField';
 import DatePicker from '@/components/datePicker';
 import { validateDate, validateString } from './validation';
