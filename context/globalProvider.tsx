@@ -24,7 +24,7 @@ export const useGlobalStore = create<GlobalStoreProps>()(set => ({
   onboarding: false,
   isLogged: false,
   isLoading: true,
-  business: 'd3e3f711-3993-4a93-a543-b9431894a682',
+  business: '2e47c8d2-03a0-4765-995c-cf0006d97d48',
   userId: null,
   session: null,
   setIsLoggingOut: isLoggingOut => set({isLoggingOut: isLoggingOut}),

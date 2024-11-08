@@ -35,6 +35,9 @@ export const CREATE_TICKET_MUTATION = gql`
       seat {
         id
       }
+      row {
+        id
+      }
       user {
         id
       }
@@ -49,6 +52,24 @@ export const CREATE_TICKET_AND_ORDER_MUTATION = gql`
   mutation CreateTickets($input: CreateTicketOrder!) {
     createTickets(input: $input) {
       id
+      name
+      date
+      seatMap
+      template {
+        id
+        name
+        category
+        business {
+          id
+          name
+        }
+        length
+        venue {
+          id
+          name
+          hasSeats
+        }
+      }
     }
   }
 `;
@@ -58,25 +79,25 @@ export const UPDATE_EVENT_MUTATION = gql`
     updateEvent(input: $input) {
       id
       name
-      category
       date
-      venue {
+      template {
         id
         name
+        length
+        description
+        subtitles
+        language
+        category
+        posterUrl
+        venue {
+          id
+          name
+        }
       }
-      eventTemplate {
-        id
-        name
-      }
-      length
-      description
-      subtitles
-      language
       business {
         id
         name
       }
-      posterUrl
     }
   }
 `;

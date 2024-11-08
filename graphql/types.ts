@@ -26,6 +26,7 @@ export type CreateTicketMutation = {
     order?: Types.Maybe<Pick<Types.Order, 'id'>>;
     discount?: Types.Maybe<Pick<Types.Discount, 'id'>>;
     seat?: Types.Maybe<Pick<Types.Seat, 'id'>>;
+    row?: Types.Maybe<Pick<Types.Row, 'id'>>;
     user?: Types.Maybe<Pick<Types.User, 'id'>>;
     event: Pick<Types.Event, 'id'>;
   };
@@ -35,27 +36,32 @@ export type CreateTicketsMutationVariables = Types.Exact<{
   input: Types.CreateTicketOrder;
 }>;
 
-export type CreateTicketsMutation = { createTickets: Pick<Types.Event, 'id'> };
+export type CreateTicketsMutation = {
+  createTickets: Pick<Types.Event, 'id' | 'name' | 'date' | 'seatMap'> & {
+    template: Pick<Types.Template, 'id' | 'name' | 'category' | 'length'> & {
+      business: Pick<Types.Business, 'id' | 'name'>;
+      venue: Pick<Types.Venue, 'id' | 'name' | 'hasSeats'>;
+    };
+  };
+};
 
 export type UpdateEventMutationVariables = Types.Exact<{
   input: Types.UpdateEvent;
 }>;
 
 export type UpdateEventMutation = {
-  updateEvent: Pick<
-    Types.Event,
-    | 'id'
-    | 'name'
-    | 'category'
-    | 'date'
-    | 'length'
-    | 'description'
-    | 'subtitles'
-    | 'language'
-    | 'posterUrl'
-  > & {
-    venue: Pick<Types.Venue, 'id' | 'name'>;
-    eventTemplate: Pick<Types.EventTemplate, 'id' | 'name'>;
+  updateEvent: Pick<Types.Event, 'id' | 'name' | 'date'> & {
+    template: Pick<
+      Types.Template,
+      | 'id'
+      | 'name'
+      | 'length'
+      | 'description'
+      | 'subtitles'
+      | 'language'
+      | 'category'
+      | 'posterUrl'
+    > & { venue: Pick<Types.Venue, 'id' | 'name'> };
     business: Pick<Types.Business, 'id' | 'name'>;
   };
 };
@@ -69,47 +75,41 @@ export type EventsListQueryVariables = Types.Exact<{
 export type EventsListQuery = {
   events: Pick<Types.EventConnection, 'totalCount'> & {
     nodes: Array<
-      Pick<
-        Types.Event,
-        | 'id'
-        | 'category'
-        | 'created'
-        | 'name'
-        | 'length'
-        | 'venueData'
-        | 'description'
-        | 'posterUrl'
-        | 'language'
-        | 'subtitles'
-        | 'date'
-      > & {
-        eventTemplate: Pick<Types.EventTemplate, 'id'>;
+      Pick<Types.Event, 'id' | 'created' | 'seatMap' | 'date'> & {
+        template: Pick<
+          Types.Template,
+          | 'id'
+          | 'name'
+          | 'posterUrl'
+          | 'language'
+          | 'length'
+          | 'category'
+          | 'subtitles'
+        > & {
+          venue: Pick<
+            Types.Venue,
+            'id' | 'name' | 'street' | 'buildingNumber' | 'city' | 'hasSeats'
+          >;
+        };
         business: Pick<Types.Business, 'id'>;
-        venue: Pick<
-          Types.Venue,
-          'id' | 'name' | 'street' | 'buildingNumber' | 'city' | 'hasSeats'
-        >;
       }
     >;
   };
 };
 
-export type EventPriceCategoryListQueryVariables = Types.Exact<{
-  filter: Types.EventPriceCategoryFilter;
+export type PriceCategoryListQueryVariables = Types.Exact<{
+  filter: Types.PriceCategoryFilter;
   sorting?: Types.InputMaybe<
-    Array<Types.EventPriceCategorySort> | Types.EventPriceCategorySort
+    Array<Types.PriceCategorySort> | Types.PriceCategorySort
   >;
   paging: Types.OffsetPaging;
 }>;
 
-export type EventPriceCategoryListQuery = {
-  eventPriceCategories: Pick<
-    Types.EventPriceCategoryConnection,
-    'totalCount'
-  > & {
+export type PriceCategoryListQuery = {
+  priceCategories: Pick<Types.PriceCategoryConnection, 'totalCount'> & {
     nodes: Array<
       Pick<
-        Types.EventPriceCategory,
+        Types.PriceCategory,
         'id' | 'name' | 'price' | 'startDate' | 'endDate'
       > & { section: Pick<Types.Section, 'id' | 'name'> }
     >;
@@ -117,19 +117,19 @@ export type EventPriceCategoryListQuery = {
 };
 
 export type PricesListQueryVariables = Types.Exact<{
-  filter: Types.EventPriceCategoryFilter;
+  filter: Types.PriceCategoryFilter;
   sorting?: Types.InputMaybe<
-    Array<Types.EventPriceCategorySort> | Types.EventPriceCategorySort
+    Array<Types.PriceCategorySort> | Types.PriceCategorySort
   >;
   paging: Types.OffsetPaging;
   meta: Types.Scalars['String']['input'];
 }>;
 
 export type PricesListQuery = {
-  getEventPrices: Pick<Types.EventPriceCategoryAvailable, 'counts'> & {
+  getEventPrices: Pick<Types.PriceCategoryAvailable, 'counts'> & {
     nodes: Array<
       Pick<
-        Types.EventPriceCategory,
+        Types.PriceCategory,
         'id' | 'name' | 'price' | 'startDate' | 'endDate'
       > & { section: Pick<Types.Section, 'id' | 'name' | 'capacity'> }
     >;
@@ -206,6 +206,23 @@ export type DiscountsListQuery = {
   };
 };
 
+export type TemplateDiscountsListQueryVariables = Types.Exact<{
+  filter: Types.TemplateDiscountFilter;
+  sorting?: Types.InputMaybe<
+    Array<Types.TemplateDiscountSort> | Types.TemplateDiscountSort
+  >;
+  paging: Types.OffsetPaging;
+}>;
+
+export type TemplateDiscountsListQuery = {
+  templateDiscounts: {
+    nodes: Array<{
+      discount: Pick<Types.Discount, 'id' | 'name' | 'percentage'>;
+      template: Pick<Types.Template, 'id' | 'name'>;
+    }>;
+  };
+};
+
 export type TicketsListQueryVariables = Types.Exact<{
   filter: Types.TicketFilter;
   sorting?: Types.InputMaybe<Array<Types.TicketSort> | Types.TicketSort>;
@@ -217,11 +234,16 @@ export type TicketsListQuery = {
     nodes: Array<
       Pick<Types.Ticket, 'id' | 'price' | 'validated' | 'created'> & {
         discount?: Types.Maybe<Pick<Types.Discount, 'id' | 'name'>>;
-        user?: Types.Maybe<Pick<Types.User, 'id' | 'firstName' | 'lastName'>>;
+        user?: Types.Maybe<
+          Pick<Types.User, 'id' | 'firstName' | 'lastName' | 'email'>
+        >;
         event: Pick<Types.Event, 'id' | 'name' | 'date'> & {
-          venue: Pick<Types.Venue, 'id' | 'name'>;
+          template: Pick<Types.Template, 'id' | 'name'> & {
+            venue: Pick<Types.Venue, 'id' | 'name'>;
+          };
         };
-        seat?: Types.Maybe<Pick<Types.Seat, 'id' | 'row' | 'seat'>>;
+        seat?: Types.Maybe<Pick<Types.Seat, 'id' | 'name'>>;
+        row?: Types.Maybe<Pick<Types.Row, 'id' | 'name'>>;
         section: Pick<Types.Section, 'id' | 'name'>;
         order?: Types.Maybe<Pick<Types.Order, 'id'>>;
       }
@@ -244,11 +266,14 @@ export type UserTicketsListQuery = {
             business: Pick<Types.Business, 'id' | 'name'>;
             discount?: Types.Maybe<Pick<Types.Discount, 'id' | 'name'>>;
             event: Pick<Types.Event, 'id' | 'name' | 'date'> & {
-              venue: Pick<Types.Venue, 'id' | 'name'>;
+              template: Pick<Types.Template, 'id' | 'name'> & {
+                venue: Pick<Types.Venue, 'id' | 'name'>;
+              };
             };
-            seat?: Types.Maybe<Pick<Types.Seat, 'id' | 'seat' | 'row'>>;
+            seat?: Types.Maybe<Pick<Types.Seat, 'id' | 'name'>>;
+            row?: Types.Maybe<Pick<Types.Row, 'id' | 'name'>>;
             section: Pick<Types.Section, 'id' | 'name'>;
-            user?: Types.Maybe<Pick<Types.User, 'id'>>;
+            user?: Types.Maybe<Pick<Types.User, 'id' | 'email'>>;
           }
         >;
       }
@@ -260,11 +285,14 @@ export type UserTicketsListQuery = {
             business: Pick<Types.Business, 'id' | 'name'>;
             discount?: Types.Maybe<Pick<Types.Discount, 'id' | 'name'>>;
             event: Pick<Types.Event, 'id' | 'name' | 'date'> & {
-              venue: Pick<Types.Venue, 'id' | 'name'>;
+              template: Pick<Types.Template, 'id' | 'name'> & {
+                venue: Pick<Types.Venue, 'id' | 'name'>;
+              };
             };
-            seat?: Types.Maybe<Pick<Types.Seat, 'id' | 'seat' | 'row'>>;
+            seat?: Types.Maybe<Pick<Types.Seat, 'id' | 'name'>>;
+            row?: Types.Maybe<Pick<Types.Row, 'id' | 'name'>>;
             section: Pick<Types.Section, 'id' | 'name'>;
-            user?: Types.Maybe<Pick<Types.User, 'id'>>;
+            user?: Types.Maybe<Pick<Types.User, 'id' | 'email'>>;
           }
         >;
       }

@@ -1,7 +1,7 @@
 import type { IGraphQLConfig } from 'graphql-config';
 
 const config: IGraphQLConfig = {
-  schema: 'http://192.168.1.112:3000/graphql',
+  schema: 'http://192.168.1.113:3000/graphql',
   extensions: {
     codegen: {
       hooks: {

@@ -1,13 +1,8 @@
-import {
-  Discount,
-  EventPriceCategory,
-  Seat,
-  Event,
-} from '@/graphql/schema.types';
+import { Discount, PriceCategory, Seat, Event } from '@/graphql/schema.types';
 
 export type TicketDetail = {
   id: string;
-  epc: EventPriceCategory;
+  epc: PriceCategory;
   price: number;
   discount?: Discount;
   seatNumber?: number;
@@ -15,7 +10,7 @@ export type TicketDetail = {
 };
 
 export type TicketCount = {
-  epc: EventPriceCategory;
+  epc: PriceCategory;
   count: number;
 };
 

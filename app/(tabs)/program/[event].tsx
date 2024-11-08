@@ -2,9 +2,13 @@ import { View, Text, RefreshControl } from 'react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useQuery, useLazyQuery } from '@apollo/client';
-import { DISCOUNTS_QUERY, EVENTS_QUERY, PRICES_QUERY } from '@/graphql/queries';
+import {
+  EVENTS_QUERY,
+  PRICES_QUERY,
+  TEMPLATE_DISCOUNTS_QUERY,
+} from '@/graphql/queries';
 import Loader from '@/components/loader';
-import { Discount, Event, EventPriceCategory } from '@/graphql/schema.types';
+import { Discount, Event, PriceCategory } from '@/graphql/schema.types';
 import Poster from '@/components/poster';
 import { icons } from '@/constants';
 import CustomButton from '@/components/customButton';
@@ -49,15 +53,23 @@ const EventDetail = () => {
     },
   });
 
+  const eventDetails: Event = eventData?.events?.nodes?.[0];
+
   const {
     data: discountsData,
     loading: discountsLoading,
     refetch: refetchDiscounts,
-  } = useQuery(DISCOUNTS_QUERY, {
+  } = useQuery(TEMPLATE_DISCOUNTS_QUERY, {
     variables: {
-      filter: { business: { id: { eq: business } } },
+      filter: {
+        and: [
+          { businessId: { eq: business } },
+          { templateId: { eq: eventDetails.template.id } },
+        ],
+      },
       paging: { limit: 50 },
     },
+    skip: !!eventDetails,
   });
 
   const [
@@ -66,7 +78,6 @@ const EventDetail = () => {
   ] = useLazyQuery(PRICES_QUERY);
 
   const discounts: Discount[] = discountsData?.discounts?.nodes;
-  const eventDetails: Event = eventData?.events?.nodes?.[0];
   const prices = pricesData?.getEventPrices;
 
   useEffect(() => {
@@ -81,14 +92,14 @@ const EventDetail = () => {
 
   useEffect(() => {
     if (!eventLoading) {
-      const eventTemplateId = eventDetails.eventTemplate.id;
+      const eventTemplateId = eventDetails.template.id;
 
       if (eventTemplateId) {
         fetchPrices({
           variables: {
             meta: event,
             filter: {
-              eventTemplateId: { eq: eventTemplateId },
+              templateId: { eq: eventTemplateId },
             },
             paging: { limit: 10 },
           },
@@ -100,7 +111,7 @@ const EventDetail = () => {
   useEffect(() => {
     if (prices && ticketCount.length < 1) {
       setTicketCount(
-        prices.nodes.map((price: EventPriceCategory) => ({
+        prices.nodes.map((price: PriceCategory) => ({
           epc: price,
           count: 0,
         })),
@@ -138,7 +149,7 @@ const EventDetail = () => {
           : seat.price,
         id: seat.id,
         epc: prices.nodes.find(
-          (price: EventPriceCategory) => seat.epcId == price.id,
+          (price: PriceCategory) => seat.epcId == price.id,
         ),
         seatNumber: seat.seatNumber,
         row: seat.rowName,
@@ -207,7 +218,7 @@ const EventDetail = () => {
             <View className="flex flex-row w-full h-fit mt-5 bg-gray-100 rounded-lg">
               <View className="flex flex-row justify-start w-1/2 h-fit">
                 <Poster
-                  posterUrl={eventDetails.posterUrl}
+                  posterUrl={eventDetails.template.posterUrl}
                   containerStyles="w-44 ml-0"
                 />
               </View>
@@ -224,20 +235,23 @@ const EventDetail = () => {
                     icon={icons.calendar}
                   />
                   <EventDetailInfoBox
-                    info={`${eventDetails.length} min`}
+                    info={`${eventDetails.template.length} min`}
                     icon={icons.duration}
                   />
                   <EventDetailInfoBox
-                    info={eventDetails.category}
+                    info={eventDetails.template.category}
                     icon={icons.category}
                   />
-                  <EventDetailInfoBox
-                    info={eventDetails.language}
-                    icon={icons.volume}
-                  />
-                  {eventDetails.subtitles ? (
+                  {eventDetails.template.language ? (
                     <EventDetailInfoBox
-                      info={eventDetails.subtitles}
+                      info={eventDetails.template.language}
+                      icon={icons.volume}
+                    />
+                  ) : null}
+
+                  {eventDetails.template.subtitles ? (
+                    <EventDetailInfoBox
+                      info={eventDetails.template.subtitles}
                       icon={icons.subtitles}
                     />
                   ) : null}
@@ -247,14 +261,14 @@ const EventDetail = () => {
                     </View>
                     <View className="flex flex-col flex-1 items-start justify-start h-fit pl-2">
                       <Text className="text-base text-start align-middle font-rmedium mb-0.5">
-                        {eventDetails.venue.name}
+                        {eventDetails.template.venue.name}
                       </Text>
                       <Text className="text-base text-start align-middle font-rregular mb-0.5">
-                        {eventDetails.venue.city}
+                        {eventDetails.template.venue.city}
                       </Text>
                       <Text className="text-base text-start align-middle font-rregular">
-                        {eventDetails.venue.street}{' '}
-                        {eventDetails.venue.buildingNumber}
+                        {eventDetails.template.venue.street}{' '}
+                        {eventDetails.template.venue.buildingNumber}
                       </Text>
                     </View>
                   </View>
@@ -264,12 +278,12 @@ const EventDetail = () => {
             <View className="flex my-2.5">
               <Text className="text-xl font-rmedium">Description</Text>
               <Text className="text-base text-justify font-rregular mt-2.5">
-                {eventDetails.description}
+                {eventDetails.template.description}
               </Text>
             </View>
             <View className="flex">
               <Text className="text-xl font-rmedium">Choose tickets</Text>
-              {eventDetails.venue.hasSeats ? (
+              {eventDetails.template.venue.hasSeats ? (
                 <View>
                   <SeatAvailability />
                   <WebView
@@ -281,25 +295,23 @@ const EventDetail = () => {
                     scalesPageToFit={true}
                     originWhitelist={['*']}
                     onMessage={handleOnMessage}
-                    source={{ uri: 'http://192.168.1.112:5173/map' }}
+                    source={{ uri: 'http://192.168.1.113:5173/map' }}
                   />
                 </View>
               ) : (
                 <View>
-                  {prices.nodes.map(
-                    (item: EventPriceCategory, index: number) => (
-                      <TicketSelection
-                        ticketCount={ticketCount}
-                        setTicketCount={setTicketCount}
-                        tickets={tickets}
-                        setTickets={setTickets}
-                        key={index}
-                        index={index}
-                        epc={item}
-                        max={prices.counts[index]}
-                      />
-                    ),
-                  )}
+                  {prices.nodes.map((item: PriceCategory, index: number) => (
+                    <TicketSelection
+                      ticketCount={ticketCount}
+                      setTicketCount={setTicketCount}
+                      tickets={tickets}
+                      setTickets={setTickets}
+                      key={index}
+                      index={index}
+                      epc={item}
+                      max={prices.counts[index]}
+                    />
+                  ))}
                 </View>
               )}
             </View>

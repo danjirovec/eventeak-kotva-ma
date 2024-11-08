@@ -24,13 +24,15 @@ const Program = () => {
       filter: {
         and: [
           { businessId: { eq: business } },
-          { category: { eq: selectedCategory } },
+          { template: {category: {eq: selectedCategory }}},
         ],
       },
       sorting: { field: 'date', direction: 'ASC' },
       paging: { limit: 10, offset: 0 },
     },
   });
+
+  console.log(data)
 
   const onRefresh = async () => {
     setRefreshing(true);

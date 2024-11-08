@@ -103,7 +103,7 @@ const Tickets = () => {
                             <Text className="text-lg font-rmedium text-center align-middle">{`${item.ticketSet.length}x`}</Text>
                           </View>
                           <Text className="text-base font-rregular text-start align-middle">
-                            {item.ticketSet[0].event.venue.name}
+                            {item.ticketSet[0].event.template.venue.name}
                           </Text>
                           <Text className="text-base font-rregular text-start align-middle">
                             {`${new Date(item.ticketSet[0].event.date).toLocaleDateString('cs-CZ')} - ${new Date(item.ticketSet[0].event.date).toLocaleTimeString('cs-CZ', { minute: '2-digit', hour: '2-digit' })}`}
@@ -137,7 +137,7 @@ const Tickets = () => {
                           <Text className="text-lg font-rmedium text-center align-middle">{`${item.ticketSet.length}x`}</Text>
                         </View>
                         <Text className="text-base font-rregular text-start align-middle">
-                          {item.ticketSet[0].event.venue.name}
+                          {item.ticketSet[0].event.template.venue.name}
                         </Text>
                         <Text className="text-base font-rregular text-start align-middle">
                           {`${new Date(item.ticketSet[0].event.date).toLocaleDateString('cs-CZ')} - ${new Date(item.ticketSet[0].event.date).toLocaleTimeString('cs-CZ', { minute: '2-digit', hour: '2-digit' })}`}

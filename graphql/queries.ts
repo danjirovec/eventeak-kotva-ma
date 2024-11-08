@@ -9,29 +9,28 @@ export const EVENTS_QUERY = gql`
     events(filter: $filter, sorting: $sorting, paging: $paging) {
       nodes {
         id
-        category
         created
-        name
-        length
-        venueData
-        description
-        posterUrl
-        language
-        subtitles
+        seatMap
         date
-        eventTemplate {
+        template {
           id
+          name
+          posterUrl
+          language
+          length
+          category
+          subtitles
+          venue {
+            id
+            name
+            street
+            buildingNumber
+            city
+            hasSeats
+          }
         }
         business {
           id
-        }
-        venue {
-          id
-          name
-          street
-          buildingNumber
-          city
-          hasSeats
         }
       }
       totalCount
@@ -40,12 +39,12 @@ export const EVENTS_QUERY = gql`
 `;
 
 export const EVENT_PRICE_CATEGORY_QUERY = gql`
-  query EventPriceCategoryList(
-    $filter: EventPriceCategoryFilter!
-    $sorting: [EventPriceCategorySort!]
+  query PriceCategoryList(
+    $filter: PriceCategoryFilter!
+    $sorting: [PriceCategorySort!]
     $paging: OffsetPaging!
   ) {
-    eventPriceCategories(filter: $filter, sorting: $sorting, paging: $paging) {
+    priceCategories(filter: $filter, sorting: $sorting, paging: $paging) {
       nodes {
         id
         name
@@ -64,8 +63,8 @@ export const EVENT_PRICE_CATEGORY_QUERY = gql`
 
 export const PRICES_QUERY = gql`
   query PricesList(
-    $filter: EventPriceCategoryFilter!
-    $sorting: [EventPriceCategorySort!]
+    $filter: PriceCategoryFilter!
+    $sorting: [PriceCategorySort!]
     $paging: OffsetPaging!
     $meta: String!
   ) {
@@ -169,6 +168,28 @@ export const DISCOUNTS_QUERY = gql`
   }
 `;
 
+export const TEMPLATE_DISCOUNTS_QUERY = gql`
+  query TemplateDiscountsList(
+    $filter: TemplateDiscountFilter!
+    $sorting: [TemplateDiscountSort!]
+    $paging: OffsetPaging!
+  ) {
+    templateDiscounts(filter: $filter, sorting: $sorting, paging: $paging) {
+      nodes {
+        discount {
+          id
+          name
+          percentage
+        }
+        template {
+          id
+          name
+        }
+      }
+    }
+  }
+`;
+
 export const TICKETS_QUERY = gql`
   query TicketsList(
     $filter: TicketFilter!
@@ -188,20 +209,28 @@ export const TICKETS_QUERY = gql`
           id
           firstName
           lastName
+          email
         }
         event {
           id
           name
           date
-          venue {
+          template {
             id
             name
+            venue {
+              id
+              name
+            }
           }
         }
         seat {
           id
-          row
-          seat
+          name
+        }
+        row {
+          id
+          name
         }
         section {
           id
@@ -241,16 +270,23 @@ export const USER_TICKETS_QUERY = gql`
             id
             name
             date
-            venue {
+            template {
               id
               name
+              venue {
+                id
+                name
+              }
             }
           }
           price
           seat {
             id
-            seat
-            row
+            name
+          }
+          row {
+            id
+            name
           }
           section {
             id
@@ -258,6 +294,7 @@ export const USER_TICKETS_QUERY = gql`
           }
           user {
             id
+            email
           }
           validated
         }
@@ -279,16 +316,23 @@ export const USER_TICKETS_QUERY = gql`
             id
             name
             date
-            venue {
+            template {
               id
               name
+              venue {
+                id
+                name
+              }
             }
           }
           price
           seat {
             id
-            seat
-            row
+            name
+          }
+          row {
+            id
+            name
           }
           section {
             id
@@ -296,6 +340,7 @@ export const USER_TICKETS_QUERY = gql`
           }
           user {
             id
+            email
           }
           validated
         }
