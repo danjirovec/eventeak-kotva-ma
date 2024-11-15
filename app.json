@@ -31,14 +31,14 @@
     "experiments": {
       "typedRoutes": true
     },
-    "newArchEnabled": true,
     "extra": {
       "router": {
         "origin": false
       },
       "eas": {
-        "projectId": "415c998c-f483-4a79-9b68-589671610d72"
+        "projectId": "d2ed09aa-24c6-4054-9581-33fa75fb0e76"
       }
-    }
+    },
+    "owner": "danjirovec"
   }
 }
