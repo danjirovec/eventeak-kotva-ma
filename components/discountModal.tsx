@@ -1,19 +1,21 @@
 import { View, Modal, Text, TouchableOpacity } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import CustomButton from './customButton';
-import { Discount } from '@/graphql/schema.types';
+import { Discount, TemplateDiscount } from '@/graphql/schema.types';
 import { TicketDetail } from '@/components/program/types';
 
 const calcDiscount = (
   ticket: TicketDetail,
-  selectedDiscount: Discount | undefined,
+  selectedDiscount: TemplateDiscount | undefined,
 ) => {
   if (!selectedDiscount) {
     return ticket.epc.price;
   } else if (ticket.discount == selectedDiscount) {
     return ticket.price;
   } else {
-    return Math.ceil((1 - selectedDiscount.percentage / 100) * ticket.price);
+    return Math.ceil(
+      (1 - selectedDiscount.discount.percentage / 100) * ticket.price,
+    );
   }
 };
 
@@ -26,14 +28,14 @@ const DiscountModal = ({
   setVisible,
 }: {
   ticketId: string;
-  data: Discount[];
+  data: TemplateDiscount[];
   setTickets: (tickets: TicketDetail[]) => void;
   tickets: TicketDetail[];
   visible: boolean;
   setVisible: (visible: boolean) => void;
 }) => {
   const [selectedDiscount, setSelectedDiscount] = useState<
-    Discount | undefined
+    TemplateDiscount | undefined
   >();
   const [ticket, setTicket] = useState<TicketDetail | undefined>();
 
@@ -75,24 +77,26 @@ const DiscountModal = ({
                 <View className="items-start w-full" style={{ rowGap: 10 }}>
                   {data.map(discount => (
                     <View
-                      key={discount.id}
+                      key={discount.discount.id}
                       className="flex-row w-full justify-start items-center">
                       <TouchableOpacity
                         className="flex-row justify-center items-center"
                         style={{ columnGap: 10 }}
                         onPress={() => {
                           setSelectedDiscount(
-                            selectedDiscount == discount ? undefined : discount,
+                            selectedDiscount?.discount == discount.discount
+                              ? undefined
+                              : discount,
                           );
                         }}>
                         <View
                           className={`w-5 h-5 border-2 justify-center items-center border-gray-400 rounded-full`}>
-                          {selectedDiscount == discount ? (
+                          {selectedDiscount?.discount == discount.discount ? (
                             <View className="w-2.5 h-2.5 bg-primary rounded-full" />
                           ) : null}
                         </View>
                         <Text className="text-base text-center align-middle font-rmedium">
-                          {`${discount.name} - ${discount.percentage}%`}
+                          {`${discount.discount.name} - ${discount.discount.percentage}%`}
                         </Text>
                       </TouchableOpacity>
                     </View>
@@ -108,7 +112,7 @@ const DiscountModal = ({
             </View>
           </View>
           <CustomButton
-            title="Ok"
+            title="Select"
             handlePress={() => {
               if (ticket) {
                 const updatedTickets = tickets.map(tick =>
@@ -126,7 +130,7 @@ const DiscountModal = ({
               }
             }}
             textStyles="color-primary"
-            containerStyles="w-32 mt-5 bg-white border-primary border-2"
+            containerStyles="w-20 mt-5 bg-white border-primary border-2"
           />
         </View>
       </View>

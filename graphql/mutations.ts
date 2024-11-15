@@ -1,16 +1,17 @@
 import { gql } from '@apollo/client';
 
-export const UPDATE_USER_MUTATION = gql`
-  mutation UpdateUser($input: UpdateOneUserInput!) {
-    updateOneUser(input: $input) {
-      email
-      firstName
-      lastName
-      placeOfResidence
-      defaultBusiness {
-        id
-        name
-      }
+export const ANONYMIZE_USER_MUTATION = gql`
+  mutation AnonymizeUser($input: AnonymizeUser!) {
+    anonymizeUser(input: $input)
+  }
+`;
+
+export const PAYMENT_MUTATION = gql`
+  mutation Payment($input: CreatePayment!) {
+    payment(input: $input) {
+      publishableKey
+      clientSecret
+      paymentId
     }
   }
 `;
@@ -18,6 +19,47 @@ export const UPDATE_USER_MUTATION = gql`
 export const UPDATE_USER_PASSWORD_MUTATION = gql`
   mutation UpdateUserPassword($input: UpdatePassword!) {
     updatePassword(input: $input)
+  }
+`;
+
+export const UPDATE_USER_AVATAR_MUTATION = gql`
+  mutation UpdateUserAvatar($input: UpdateOneUserInput!) {
+    updateOneUser(input: $input) {
+      avatarUrl
+    }
+  }
+`;
+
+export const UPDATE_USER_MUTATION = gql`
+  mutation UpdateUser($input: UpdateOneUserInput!) {
+    updateOneUser(input: $input) {
+      firstName
+      lastName
+      email
+      placeOfResidence
+    }
+  }
+`;
+
+export const CREATE_MEMBERSHIP_MUTATION = gql`
+  mutation CreateMembership($input: CreateMembership!) {
+    createMembership(input: $input) {
+      id
+      points
+      state
+      expiryDate
+    }
+  }
+`;
+
+export const UPDATE_MEMBERSHIP_MUTATION = gql`
+  mutation UpdateMembership($input: UpdateOneMembershipInput!) {
+    updateOneMembership(input: $input) {
+      id
+      points
+      state
+      expiryDate
+    }
   }
 `;
 

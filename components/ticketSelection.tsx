@@ -6,6 +6,7 @@ import Figure from '@/components/figure';
 import { PriceCategory } from '@/graphql/schema.types';
 import { TicketDetail, TicketCount } from '@/components/program/types';
 import * as Crypto from 'expo-crypto';
+import { useGlobalStore } from '@/context/globalProvider';
 
 const TicketSelection = ({
   ticketCount,
@@ -24,6 +25,9 @@ const TicketSelection = ({
   index: number;
   max: number;
 }) => {
+  const { currency } = useGlobalStore(state => ({
+    currency: state.currency,
+  }));
   const [currentCount, setCurrentCount] = useState(0);
 
   const increment = () => {
@@ -68,7 +72,7 @@ const TicketSelection = ({
         <View className="flex-row ml-5" style={{ columnGap: 10 }}>
           <Figure title="Category" value={pc.name} />
           <Figure title="Section" value={pc.section.name} />
-          <Figure title="Price" value={`${pc.price} Kč`} />
+          <Figure title="Price" value={`${pc.price} ${currency}`} />
         </View>
         <View className="flex flex-row items-center justify-between w-1/5 mr-5">
           <Pressable onPress={decrement}>

@@ -2,7 +2,7 @@ import { View, Text } from 'react-native';
 import React from 'react';
 import FormField from '@/components/formField';
 import DatePicker from '@/components/datePicker';
-import { validateDate, validateString } from './validation';
+import { validateDate, validatePlace, validateString } from './validation';
 
 const SignUpStepOne = ({
   form,
@@ -20,6 +20,14 @@ const SignUpStepOne = ({
     setErrors({
       ...errors,
       [key]: validateString(e) ?? '',
+    });
+  };
+
+  const handlePlaceChange = (e: string, key: string) => {
+    setForm({ ...form, [key]: e });
+    setErrors({
+      ...errors,
+      [key]: validatePlace(e) ?? '',
     });
   };
 
@@ -54,13 +62,13 @@ const SignUpStepOne = ({
       ) : null}
 
       <FormField
-        title="Place of birth"
-        value={form.placeOfBirth}
-        handleChangeText={e => handleStringChange(e, 'placeOfBirth')}
+        title="Place of Residence"
+        value={form.placeOfResidence}
+        handleChangeText={e => handlePlaceChange(e, 'placeOfResidence')}
         otherStyles="mt-5"
       />
-      {errors.placeOfBirth ? (
-        <Text className="text-red-500">{errors.placeOfBirth}</Text>
+      {errors.placeOfResidence ? (
+        <Text className="text-red-500">{errors.placeOfResidence}</Text>
       ) : null}
 
       <DatePicker

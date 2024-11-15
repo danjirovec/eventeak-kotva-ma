@@ -30,7 +30,7 @@ const EventPreviewBox = ({ item }: { item: Event }) => {
           </View>
         </View>
         <View className="flex items-end">
-          <MoreButton eventId={item.id} />
+          <MoreButton eventId={item.id} templateId={item.template.id} />
         </View>
       </View>
     </View>

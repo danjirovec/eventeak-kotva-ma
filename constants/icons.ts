@@ -24,6 +24,7 @@ import minus from '../assets/icons/minus.png';
 import settings from '../assets/icons/settings.png';
 import angleright from '../assets/icons/angle-right.png';
 import angledown from '../assets/icons/angle-down.png';
+import camera from '../assets/icons/camera.png';
 
 export default {
   settings,
@@ -52,4 +53,5 @@ export default {
   plus,
   angledown,
   angleright,
+  camera,
 };

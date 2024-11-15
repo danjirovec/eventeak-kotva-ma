@@ -8,7 +8,12 @@ import {
   TEMPLATE_DISCOUNTS_QUERY,
 } from '@/graphql/queries';
 import Loader from '@/components/loader';
-import { Discount, Event, PriceCategory } from '@/graphql/schema.types';
+import {
+  Discount,
+  Event,
+  PriceCategory,
+  TemplateDiscount,
+} from '@/graphql/schema.types';
 import Poster from '@/components/poster';
 import { icons } from '@/constants';
 import CustomButton from '@/components/customButton';
@@ -27,8 +32,10 @@ import { WebView } from 'react-native-webview';
 
 const EventDetail = () => {
   const { event } = useLocalSearchParams();
-  const { business } = useGlobalStore(state => ({
+  const [eventId, templateId] = (event as string).split('&');
+  const { business, currency } = useGlobalStore(state => ({
     business: state.business,
+    currency: state.currency,
   }));
   const [modalVisibility, setModalVisibility] = useState<{
     [key: string]: boolean;
@@ -39,15 +46,17 @@ const EventDetail = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [scrollEnabled, setScrollEnabled] = useState(true);
   const webViewRef = useRef<WebView>(null);
+  const [injectedJs, setInjectedJs] = useState<string>('');
 
   const {
     data: eventData,
+    error,
     loading: eventLoading,
     refetch: refetchEvent,
   } = useQuery(EVENTS_QUERY, {
     variables: {
       filter: {
-        and: [{ businessId: { eq: business } }, { id: { eq: event } }],
+        and: [{ businessId: { eq: business } }, { id: { eq: eventId } }],
       },
       paging: { limit: 1 },
     },
@@ -62,14 +71,10 @@ const EventDetail = () => {
   } = useQuery(TEMPLATE_DISCOUNTS_QUERY, {
     variables: {
       filter: {
-        and: [
-          { businessId: { eq: business } },
-          { templateId: { eq: eventDetails.template.id } },
-        ],
+        and: [{ templateId: { eq: templateId } }],
       },
       paging: { limit: 50 },
     },
-    skip: !!eventDetails,
   });
 
   const [
@@ -77,7 +82,7 @@ const EventDetail = () => {
     { data: pricesData, loading: pricesLoading, refetch: refetchPrices },
   ] = useLazyQuery(PRICES_QUERY);
 
-  const discounts: Discount[] = discountsData?.discounts?.nodes;
+  const discounts: TemplateDiscount[] = discountsData?.templateDiscounts?.nodes;
   const prices = pricesData?.getEventPrices;
 
   useEffect(() => {
@@ -92,14 +97,12 @@ const EventDetail = () => {
 
   useEffect(() => {
     if (!eventLoading) {
-      const eventTemplateId = eventDetails.template.id;
-
-      if (eventTemplateId) {
+      if (templateId) {
         fetchPrices({
           variables: {
-            meta: event,
+            meta: eventId,
             filter: {
-              templateId: { eq: eventTemplateId },
+              templateId: { eq: templateId },
             },
             paging: { limit: 10 },
           },
@@ -144,7 +147,8 @@ const EventDetail = () => {
       return {
         price: matchingTicket?.discount
           ? Math.ceil(
-              (1 - matchingTicket?.discount.percentage / 100) * seat.price,
+              (1 - matchingTicket?.discount.discount.percentage / 100) *
+                seat.price,
             )
           : seat.price,
         id: seat.id,
@@ -152,7 +156,9 @@ const EventDetail = () => {
           (price: PriceCategory) => seat.epcId == price.id,
         ),
         seatNumber: seat.seatNumber,
-        row: seat.rowName,
+        seatId: seat.seatId,
+        rowName: seat.rowName,
+        rowId: seat.rowId,
         discount: matchingTicket?.discount || null,
       };
     });
@@ -193,6 +199,16 @@ const EventDetail = () => {
       `;
     webViewRef?.current?.injectJavaScript(jsCode);
   };
+
+  useEffect(() => {
+    if (!eventLoading) {
+      const injectedJs = `
+      window.seatMap = '${JSON.stringify(eventDetails.seatMap)}';
+      true;
+    `;
+      setInjectedJs(injectedJs);
+    }
+  }, [eventLoading]);
 
   return (
     <Container>
@@ -282,20 +298,22 @@ const EventDetail = () => {
               </Text>
             </View>
             <View className="flex">
-              <Text className="text-xl font-rmedium">Choose tickets</Text>
+              <Text className="text-xl font-rmedium">Select tickets</Text>
               {eventDetails.template.venue.hasSeats ? (
                 <View>
                   <SeatAvailability />
                   <WebView
+                    injectedJavaScriptBeforeContentLoaded={injectedJs}
                     startInLoadingState={true}
                     ref={webViewRef}
                     onTouchStart={() => setScrollEnabled(false)}
                     onTouchEnd={() => setScrollEnabled(true)}
                     className="w-96 h-96 my-2.5"
                     scalesPageToFit={true}
-                    originWhitelist={['*']}
                     onMessage={handleOnMessage}
-                    source={{ uri: 'http://192.168.1.113:5173/map' }}
+                    source={{
+                      uri: 'https://staging.eventeak.com/map',
+                    }}
                   />
                 </View>
               ) : (
@@ -336,7 +354,7 @@ const EventDetail = () => {
                       Total
                     </Text>
                     <Text className="text-start text-lg font-rmedium mr-5">
-                      {`${total} Kč`}
+                      {`${total} ${currency}`}
                     </Text>
                   </View>
                 </View>
@@ -352,6 +370,7 @@ const EventDetail = () => {
                     tickets: JSON.stringify(tickets),
                     event: JSON.stringify(eventDetails),
                     total: total,
+                    paymentType: 'Ticket',
                   },
                 });
               }}

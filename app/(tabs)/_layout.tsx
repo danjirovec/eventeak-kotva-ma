@@ -1,10 +1,12 @@
 import { Text, View, Image, ImageSourcePropType } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { Redirect, Tabs } from 'expo-router';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { icons } from '@/constants';
 import Loader from '@/components/loader';
 import { useGlobalStore } from '@/context/globalProvider';
+import { useQuery } from '@apollo/client';
+import { BUSINESS_QUERY } from '@/graphql/queries';
 
 const TabIcon = ({
   icon,
@@ -18,7 +20,7 @@ const TabIcon = ({
   focused: boolean;
 }) => {
   return (
-    <View className="items-center justify-center gap-2">
+    <View className="items-center justify-center gap-2 border-red-500">
       <Image
         source={icon}
         resizeMode="contain"
@@ -33,11 +35,27 @@ const TabIcon = ({
 };
 
 const TabsLayout = () => {
-  const { isLoading, isLogged, isLoggingOut } = useGlobalStore(state => ({
-    isLoading: state.isLoading,
-    isLogged: state.isLogged,
-    isLoggingOut: state.isLoggingOut,
-  }));
+  const { isLoading, isLogged, isLoggingOut, business, setCurrency } =
+    useGlobalStore(state => ({
+      isLoading: state.isLoading,
+      isLogged: state.isLogged,
+      isLoggingOut: state.isLoggingOut,
+      business: state.business,
+      setCurrency: state.setCurrency,
+    }));
+
+  const { data, loading } = useQuery(BUSINESS_QUERY, {
+    variables: {
+      filter: { id: { eq: business } },
+      paging: { limit: 1 },
+    },
+  });
+
+  useEffect(() => {
+    if (data) {
+      setCurrency(data.businesses.nodes[0].currency);
+    }
+  }, [loading]);
 
   if (!isLoading && !isLogged) return <Redirect href="/sign-in" />;
 

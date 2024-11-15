@@ -5,10 +5,12 @@ import { icons } from '@/constants';
 
 const SlideAlert = ({
   message,
+  description,
   visible,
   success,
 }: {
   message: string;
+  description?: string;
   visible: boolean;
   success: boolean;
 }) => {
@@ -46,7 +48,12 @@ const SlideAlert = ({
         ) : (
           <Icon icon={icons.crossfull} color="red" />
         )}
-        <Text className="text-base font-rmedium">{message}</Text>
+        <View>
+          <Text className="text-base font-rmedium">{message}</Text>
+          {description ? (
+            <Text className="text-xs font-rmedium">{description}</Text>
+          ) : null}
+        </View>
       </View>
     </Animated.View>
   ) : null;

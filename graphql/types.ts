@@ -1,14 +1,17 @@
 import type * as Types from './schema.types';
 
-export type UpdateUserMutationVariables = Types.Exact<{
-  input: Types.UpdateOneUserInput;
+export type AnonymizeUserMutationVariables = Types.Exact<{
+  input: Types.AnonymizeUser;
 }>;
 
-export type UpdateUserMutation = {
-  updateOneUser: Pick<
-    Types.User,
-    'email' | 'firstName' | 'lastName' | 'placeOfResidence'
-  > & { defaultBusiness?: Types.Maybe<Pick<Types.Business, 'id' | 'name'>> };
+export type AnonymizeUserMutation = Pick<Types.Mutation, 'anonymizeUser'>;
+
+export type PaymentMutationVariables = Types.Exact<{
+  input: Types.CreatePayment;
+}>;
+
+export type PaymentMutation = {
+  payment: Pick<Types.Payment, 'publishableKey' | 'clientSecret' | 'paymentId'>;
 };
 
 export type UpdateUserPasswordMutationVariables = Types.Exact<{
@@ -16,6 +19,47 @@ export type UpdateUserPasswordMutationVariables = Types.Exact<{
 }>;
 
 export type UpdateUserPasswordMutation = Pick<Types.Mutation, 'updatePassword'>;
+
+export type UpdateUserAvatarMutationVariables = Types.Exact<{
+  input: Types.UpdateOneUserInput;
+}>;
+
+export type UpdateUserAvatarMutation = {
+  updateOneUser: Pick<Types.User, 'avatarUrl'>;
+};
+
+export type UpdateUserMutationVariables = Types.Exact<{
+  input: Types.UpdateOneUserInput;
+}>;
+
+export type UpdateUserMutation = {
+  updateOneUser: Pick<
+    Types.User,
+    'firstName' | 'lastName' | 'email' | 'placeOfResidence'
+  >;
+};
+
+export type CreateMembershipMutationVariables = Types.Exact<{
+  input: Types.CreateMembership;
+}>;
+
+export type CreateMembershipMutation = {
+  createMembership: Pick<
+    Types.Membership,
+    'id' | 'points' | 'state' | 'expiryDate'
+  >;
+};
+
+export type UpdateMembershipMutationVariables = Types.Exact<{
+  input: Types.UpdateOneMembershipInput;
+}>;
+
+export type UpdateMembershipMutation = {
+  updateOneMembership: Pick<
+    Types.Membership,
+    'id' | 'points' | 'state' | 'expiryDate'
+  >;
+};
 
 export type CreateTicketMutationVariables = Types.Exact<{
   input: Types.CreateOneTicketInput;
@@ -75,7 +119,7 @@ export type EventsListQueryVariables = Types.Exact<{
 export type EventsListQuery = {
   events: Pick<Types.EventConnection, 'totalCount'> & {
     nodes: Array<
-      Pick<Types.Event, 'id' | 'created' | 'seatMap' | 'date'> & {
+      Pick<Types.Event, 'id' | 'name' | 'created' | 'date' | 'seatMap'> & {
         template: Pick<
           Types.Template,
           | 'id'
@@ -83,6 +127,7 @@ export type EventsListQuery = {
           | 'posterUrl'
           | 'language'
           | 'length'
+          | 'description'
           | 'category'
           | 'subtitles'
         > & {
@@ -153,11 +198,19 @@ export type UserProfileQuery = {
     | 'firstName'
     | 'lastName'
     | 'birthDate'
-    | 'created'
     | 'eventsVisited'
-    | 'membershipPoints'
     | 'benefitsUsed'
-  >;
+  > & {
+    membership?: Types.Maybe<
+      Pick<Types.Membership, 'id' | 'points' | 'expiryDate' | 'state'> & {
+        user: Pick<Types.User, 'id' | 'email'>;
+        membershipType: Pick<
+          Types.MembershipType,
+          'id' | 'name' | 'pointsPerTicket'
+        >;
+      }
+    >;
+  };
 };
 
 export type BenefitsAndMembershipQueryVariables = Types.Exact<{
@@ -168,7 +221,10 @@ export type BenefitsAndMembershipQueryVariables = Types.Exact<{
 }>;
 
 export type BenefitsAndMembershipQuery = {
-  getUserBenefits: Pick<Types.UserBenefits, 'membershipPoints'> & {
+  getUserBenefits: Pick<
+    Types.UserBenefits,
+    'membershipPoints' | 'membership'
+  > & {
     available: Array<
       Pick<
         Types.Benefit,
@@ -203,6 +259,18 @@ export type DiscountsListQuery = {
         business: Pick<Types.Business, 'id'>;
       }
     >;
+  };
+};
+
+export type BusinessesListQueryVariables = Types.Exact<{
+  filter: Types.BusinessFilter;
+  sorting?: Types.InputMaybe<Array<Types.BusinessSort> | Types.BusinessSort>;
+  paging: Types.OffsetPaging;
+}>;
+
+export type BusinessesListQuery = {
+  businesses: Pick<Types.BusinessConnection, 'totalCount'> & {
+    nodes: Array<Pick<Types.Business, 'id' | 'name' | 'currency'>>;
   };
 };
 
@@ -267,7 +335,7 @@ export type UserTicketsListQuery = {
             discount?: Types.Maybe<Pick<Types.Discount, 'id' | 'name'>>;
             event: Pick<Types.Event, 'id' | 'name' | 'date'> & {
               template: Pick<Types.Template, 'id' | 'name'> & {
-                venue: Pick<Types.Venue, 'id' | 'name'>;
+                venue: Pick<Types.Venue, 'id' | 'name' | 'hasSeats'>;
               };
             };
             seat?: Types.Maybe<Pick<Types.Seat, 'id' | 'name'>>;
@@ -286,7 +354,7 @@ export type UserTicketsListQuery = {
             discount?: Types.Maybe<Pick<Types.Discount, 'id' | 'name'>>;
             event: Pick<Types.Event, 'id' | 'name' | 'date'> & {
               template: Pick<Types.Template, 'id' | 'name'> & {
-                venue: Pick<Types.Venue, 'id' | 'name'>;
+                venue: Pick<Types.Venue, 'id' | 'name' | 'hasSeats'>;
               };
             };
             seat?: Types.Maybe<Pick<Types.Seat, 'id' | 'name'>>;
@@ -313,9 +381,36 @@ export type MembershipsListQuery = {
     nodes: Array<
       Pick<Types.Membership, 'id' | 'points' | 'expiryDate'> & {
         user: Pick<Types.User, 'id'>;
-        membershipType?: Types.Maybe<Pick<Types.MembershipType, 'id' | 'name'>>;
+        membershipType: Pick<Types.MembershipType, 'id' | 'name'>;
         business: Pick<Types.Business, 'id'>;
       }
     >;
   };
+};
+
+export type MembershipTypesListQueryVariables = Types.Exact<{
+  filter: Types.MembershipTypeFilter;
+  sorting?: Types.InputMaybe<
+    Array<Types.MembershipTypeSort> | Types.MembershipTypeSort
+  >;
+  paging: Types.OffsetPaging;
+}>;
+
+export type MembershipTypesListQuery = {
+  membershipTypes: {
+    nodes: Array<
+      Pick<
+        Types.MembershipType,
+        'id' | 'name' | 'description' | 'pointsPerTicket' | 'price'
+      > & { business: Pick<Types.Business, 'id'> }
+    >;
+  };
+};
+
+export type GetPublishableKeyQueryVariables = Types.Exact<{
+  [key: string]: never;
+}>;
+
+export type GetPublishableKeyQuery = {
+  getPublishableKey: Pick<Types.PublishableKey, 'publishableKey'>;
 };

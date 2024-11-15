@@ -4,11 +4,17 @@ import Icon from './icon';
 import { icons } from '@/constants';
 import { router } from 'expo-router';
 
-const MoreButton = ({ eventId }: { eventId: string }) => {
+const MoreButton = ({
+  eventId,
+  templateId,
+}: {
+  eventId: string;
+  templateId: string;
+}) => {
   return (
     <TouchableOpacity
       onPress={() => {
-        router.push(`/(tabs)/program/${eventId}`);
+        router.push(`/(tabs)/program/${eventId}&${templateId}`);
       }}>
       <View className="flex flex-row items-center justify-center bg-secondary w-32 h-14 rounded-lg mr-2">
         <Text className="text-base align-middle text-center font-rmedium text-white mr-1 mb-1">

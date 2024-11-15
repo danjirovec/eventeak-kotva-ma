@@ -19,20 +19,18 @@ const Program = () => {
   const { business } = useGlobalStore(state => ({
     business: state.business,
   }));
-  const { data, loading, refetch, fetchMore } = useQuery(EVENTS_QUERY, {
+  const { data, loading, refetch, fetchMore, error } = useQuery(EVENTS_QUERY, {
     variables: {
       filter: {
         and: [
           { businessId: { eq: business } },
-          { template: {category: {eq: selectedCategory }}},
+          { template: { category: { eq: selectedCategory } } },
         ],
       },
       sorting: { field: 'date', direction: 'ASC' },
       paging: { limit: 10, offset: 0 },
     },
   });
-
-  console.log(data)
 
   const onRefresh = async () => {
     setRefreshing(true);

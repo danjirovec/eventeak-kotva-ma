@@ -53,11 +53,11 @@ export const signUpWithEmail = async (data: Form, business: string) => {
     email: data.email,
     password: data.password,
     options: {
-      emailRedirectTo: 'com.applausio://(auth)/sign-in',
+      emailRedirectTo: 'com.eventeak://(auth)/sign-in',
       data: {
         firstName: data.firstName,
         lastName: data.lastName,
-        placeOfResidence: data.placeOfBirth,
+        placeOfResidence: data.placeOfResidence,
         birthDate: data.birthDate,
         businessId: business,
       },
@@ -81,7 +81,7 @@ export const resetPassword = async (password: string) => {
 
 export const forgotPassword = async (email: string) => {
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: 'com.applausio://(auth)/reset-password',
+    redirectTo: 'com.eventeak://(auth)/reset-password',
   });
   return error;
 };

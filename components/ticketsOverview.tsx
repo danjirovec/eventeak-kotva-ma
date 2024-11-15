@@ -5,6 +5,7 @@ import Icon from '@/components/icon';
 import Figure from '@/components/figure';
 import { TicketsOverviewProps } from '@/components/program/types';
 import { icons } from '@/constants';
+import { useGlobalStore } from '@/context/globalProvider';
 
 const TicketsOverview = ({
   eventDetails,
@@ -17,6 +18,10 @@ const TicketsOverview = ({
   toggleModalVisibility,
   handleSendMessage,
 }: TicketsOverviewProps) => {
+  const { currency } = useGlobalStore(state => ({
+    currency: state.currency,
+  }));
+
   return (
     <View>
       {tickets.length > 0 ? (
@@ -24,21 +29,22 @@ const TicketsOverview = ({
           <View key={ticket.id} className="flex flex-col items-start">
             <View className="flex-row items-center justify-between w-full h-14 rounded-lg bg-gray-200 mt-2.5">
               <View className="flex-row ml-5" style={{ columnGap: 10 }}>
-                {!eventDetails.venue.hasSeats && (
+                {!eventDetails.template.venue.hasSeats && (
                   <Figure title="Section" value={ticket.epc.section.name} />
                 )}
-                {eventDetails.venue.hasSeats && (
+                {eventDetails.template.venue.hasSeats && (
                   <View className="flex-row" style={{ columnGap: 10 }}>
                     <Figure title="Section" value={ticket.epc.section.name} />
-                    <Figure
-                      title="Seat"
-                      value={`${ticket.row} - ${ticket.seatNumber}`}
-                    />
+                    <Figure title="Row" value={`${ticket.rowName}`} />
+                    <Figure title="Seat" value={`${ticket.seatNumber}`} />
                   </View>
                 )}
-                <Figure title="Price" value={`${ticket.price} Kč`} />
+                <Figure title="Price" value={`${ticket.price} ${currency}`} />
                 {ticket.discount ? (
-                  <Figure title="Discount" value={ticket.discount.name} />
+                  <Figure
+                    title="Discount"
+                    value={ticket.discount.discount.name}
+                  />
                 ) : null}
               </View>
               <View className="mr-5">

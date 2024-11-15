@@ -1,7 +1,7 @@
 import { ApolloClient, createHttpLink, InMemoryCache } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
-import { getAuth } from '@/lib/getAuth';
 import { apiUrl } from '@/lib/config';
+import { useGlobalStore } from '@/context/globalProvider';
 
 const httpLink = createHttpLink({
   uri: apiUrl,
@@ -9,12 +9,16 @@ const httpLink = createHttpLink({
 });
 
 const authLink = setContext(async (_, { headers }) => {
-  const token = (await getAuth()).accessToken;
+  const { session } = useGlobalStore.getState();
+  const token = session?.access_token;
   return {
     headers: {
       ...headers,
-      authorization: token ? `Bearer ${token}` : '',
+      Authorization: token ? `Bearer ${token}` : '',
+      'Content-Type': 'application/json',
+      'Apollo-Require-Preflight': 'true',
     },
+    credentials: true,
   };
 });
 

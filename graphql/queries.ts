@@ -9,15 +9,17 @@ export const EVENTS_QUERY = gql`
     events(filter: $filter, sorting: $sorting, paging: $paging) {
       nodes {
         id
+        name
         created
-        seatMap
         date
+        seatMap
         template {
           id
           name
           posterUrl
           language
           length
+          description
           category
           subtitles
           venue {
@@ -68,7 +70,12 @@ export const PRICES_QUERY = gql`
     $paging: OffsetPaging!
     $meta: String!
   ) {
-    getEventPrices(filter: $filter, sorting: $sorting, paging: $paging, meta: $meta) {
+    getEventPrices(
+      filter: $filter
+      sorting: $sorting
+      paging: $paging
+      meta: $meta
+    ) {
       nodes {
         id
         name
@@ -93,7 +100,12 @@ export const USER_PROFILE_QUERY = gql`
     $paging: OffsetPaging!
     $meta: String!
   ) {
-    profileInfo(filter: $filter, sorting: $sorting, paging: $paging, meta: $meta) {
+    profileInfo(
+      filter: $filter
+      sorting: $sorting
+      paging: $paging
+      meta: $meta
+    ) {
       id
       email
       placeOfResidence
@@ -101,9 +113,22 @@ export const USER_PROFILE_QUERY = gql`
       firstName
       lastName
       birthDate
-      created
+      membership {
+        id
+        user {
+          id
+          email
+        }
+        points
+        expiryDate
+        state
+        membershipType {
+          id
+          name
+          pointsPerTicket
+        }
+      }
       eventsVisited
-      membershipPoints
       benefitsUsed
     }
   }
@@ -144,6 +169,7 @@ export const BENEFITS_QUERY = gql`
         id
       }
       membershipPoints
+      membership
     }
   }
 `;
@@ -162,6 +188,23 @@ export const DISCOUNTS_QUERY = gql`
         business {
           id
         }
+      }
+      totalCount
+    }
+  }
+`;
+
+export const BUSINESS_QUERY = gql`
+  query BusinessesList(
+    $filter: BusinessFilter!
+    $sorting: [BusinessSort!]
+    $paging: OffsetPaging!
+  ) {
+    businesses(filter: $filter, sorting: $sorting, paging: $paging) {
+      nodes {
+        id
+        name
+        currency
       }
       totalCount
     }
@@ -276,6 +319,7 @@ export const USER_TICKETS_QUERY = gql`
               venue {
                 id
                 name
+                hasSeats
               }
             }
           }
@@ -322,6 +366,7 @@ export const USER_TICKETS_QUERY = gql`
               venue {
                 id
                 name
+                hasSeats
               }
             }
           }
@@ -371,6 +416,35 @@ export const MEMBERSHIPS_QUERY = gql`
           id
         }
       }
+    }
+  }
+`;
+
+export const MEMBERSHIP_TYPES_QUERY = gql`
+  query MembershipTypesList(
+    $filter: MembershipTypeFilter!
+    $sorting: [MembershipTypeSort!]
+    $paging: OffsetPaging!
+  ) {
+    membershipTypes(filter: $filter, sorting: $sorting, paging: $paging) {
+      nodes {
+        id
+        name
+        description
+        pointsPerTicket
+        price
+        business {
+          id
+        }
+      }
+    }
+  }
+`;
+
+export const PUBLISHABLE_KEY_QUERY = gql`
+  query GetPublishableKey {
+    getPublishableKey {
+      publishableKey
     }
   }
 `;

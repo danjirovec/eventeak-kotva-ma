@@ -4,7 +4,7 @@ type SignUpErrors = {
   confirmPassword: string;
   firstName: string;
   lastName: string;
-  placeOfBirth: string;
+  placeOfResidence: string;
   birthDate: string;
 };
 
@@ -28,7 +28,7 @@ type SetSignUpErrors = React.Dispatch<
     confirmPassword: string;
     firstName: string;
     lastName: string;
-    placeOfBirth: string;
+    placeOfResidence: string;
     birthDate: string;
   }>
 >;
@@ -49,7 +49,7 @@ type SetResetPasswordErrors = React.Dispatch<
 type Form = {
   firstName: string;
   lastName: string;
-  placeOfBirth?: string;
+  placeOfResidence?: string;
   email: string;
   password: string;
   confirmPassword: string;
@@ -60,10 +60,26 @@ type SetForm = React.Dispatch<
   React.SetStateAction<{
     firstName: string;
     lastName: string;
-    placeOfBirth?: string;
+    placeOfResidence?: string;
     email: string;
     password: string;
     confirmPassword: string;
     birthDate: Date;
+  }>
+>;
+
+type UpdateForm = {
+  firstName: string;
+  lastName: string;
+  placeOfResidence?: string;
+  email: string;
+};
+
+type SetUpdateForm = React.Dispatch<
+  React.SetStateAction<{
+    firstName: string;
+    lastName: string;
+    placeOfResidence?: string;
+    email: string;
   }>
 >;

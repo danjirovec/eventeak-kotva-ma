@@ -1,12 +1,20 @@
-import { Discount, PriceCategory, Seat, Event } from '@/graphql/schema.types';
+import {
+  Discount,
+  PriceCategory,
+  Seat,
+  Event,
+  TemplateDiscount,
+} from '@/graphql/schema.types';
 
 export type TicketDetail = {
   id: string;
   epc: PriceCategory;
   price: number;
-  discount?: Discount;
+  discount?: TemplateDiscount;
   seatNumber?: number;
-  row?: string;
+  seatId?: string;
+  rowName?: string;
+  rowId?: string;
 };
 
 export type TicketCount = {
@@ -20,7 +28,7 @@ export type TicketsOverviewProps = {
   ticketCount: TicketCount[];
   setTickets: (tickets: TicketDetail[]) => void;
   setTicketCount: (ticketCount: TicketCount[]) => void;
-  discounts: Discount[];
+  discounts: TemplateDiscount[];
   modalVisibility: { [key: string]: boolean };
   toggleModalVisibility: (ticketId: string, visible: boolean) => void;
   handleSendMessage: (tickets: TicketDetail[]) => void;

@@ -18,35 +18,27 @@ const App = () => {
   if (onboarding) return <Redirect href="/sign-in" />;
 
   return (
-    <SafeAreaView className="bg-white h-full">
+    <SafeAreaView className="bg-gray-100 h-full">
       {!isLoading ? (
         <ScrollView
           contentContainerStyle={{
             height: '100%',
           }}>
-          <View className="w-full flex justify-center items-center h-full px-4">
-            <Image
-              source={images.logo}
-              className="w-[130px] h-[84px]"
-              resizeMode="contain"
-            />
-
-            <Image
-              source={images.cards}
-              className="max-w-[380px] w-full h-[298px]"
-              resizeMode="contain"
-            />
-
-            <View className="relative mt-5">
-              <Text className="text-3xl text-black font-rbold text-center">
-                Discover Endless{'\n'}
-                Possibilities with{' '}
-                <Text className="text-secondary-200">Aora</Text>
-              </Text>
+          <View
+            style={{ rowGap: 90 }}
+            className="w-full flex justify-center items-center h-full px-4">
+            <View
+              style={{ rowGap: 20 }}
+              className="w-full flex justify-center items-center px-4">
+              <Image
+                source={images.logo}
+                className="w-[250px] h-[125px]"
+                resizeMode="contain"
+              />
 
               <Image
-                source={images.path}
-                className="w-[136px] h-[15px] absolute -bottom-2 -right-8"
+                source={images.cards}
+                className="max-w-[340px] w-full h-[298px]"
                 resizeMode="contain"
               />
             </View>
@@ -57,7 +49,8 @@ const App = () => {
                 saveAsyncStorage(true);
                 router.replace('/sign-in');
               }}
-              containerStyles="w-80 mt-10"
+              containerStyles="w-80 mt-10 bg-white border-2 border-primary"
+              textStyles='text-primary'
             />
           </View>
         </ScrollView>

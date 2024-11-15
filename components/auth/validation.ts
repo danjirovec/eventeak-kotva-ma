@@ -37,6 +37,13 @@ export const validateString = (str: string) => {
   return undefined;
 };
 
+export const validatePlace = (str: string) => {
+  if (/[^ a-zA-Z\u00C0-\u017F]/.test(str)) {
+    return 'Field must contain only letters or space';
+  }
+  return undefined;
+};
+
 export const validateDate = (date: Date) => {
   if (date >= new Date()) {
     return 'Birth date must not be today or later';
@@ -65,7 +72,7 @@ export const validateErrors = (errors: KeyValueObject) => {
 
 export const validateRequiredStepOne = (form: KeyValueObject) => {
   let valid = true;
-  const { email, password, confirmPassword, placeOfBirth, date, ...rest } =
+  const { email, password, confirmPassword, placeOfResidence, date, ...rest } =
     form;
   for (let field in rest) {
     if (form[field] === '') {
@@ -78,8 +85,18 @@ export const validateRequiredStepOne = (form: KeyValueObject) => {
   return valid;
 };
 
+export const validateRequiredUpdate = (form: KeyValueObject) => {
+  const { placeOfResidence, ...rest } = form;
+  for (let field in rest) {
+    if (form[field] === '') {
+      return false;
+    }
+  }
+  return true;
+};
+
 export const validateRequiredStepTwo = (form: KeyValueObject) => {
-  const { date, placeOfBirth, firstName, lastName, ...rest } = form;
+  const { date, placeOfResidence, firstName, lastName, ...rest } = form;
   for (let field in rest) {
     if (form[field] === '') {
       return false;

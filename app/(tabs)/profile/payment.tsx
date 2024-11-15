@@ -1,12 +1,11 @@
-import { Button, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { router, useLocalSearchParams } from 'expo-router';
-import { TicketDetail } from '@/components/program/types';
-import { Event } from '@/graphql/schema.types';
+import { MembershipType } from '@/graphql/schema.types';
 import CustomButton from '@/components/customButton';
 import { useMutation } from '@apollo/client';
 import {
-  CREATE_TICKET_AND_ORDER_MUTATION,
+  CREATE_MEMBERSHIP_MUTATION,
   PAYMENT_MUTATION,
 } from '@/graphql/mutations';
 import Loader from '@/components/loader';
@@ -19,13 +18,19 @@ import { useStripe } from '@stripe/stripe-react-native';
 import SlideAlert from '@/components/slideAlert';
 
 const Payment = () => {
-  const { event, tickets, total, paymentType } = useLocalSearchParams();
+  const { membership, paymentType } = useLocalSearchParams();
+  const [createMembership, { loading: membershipLoading, error }] = useMutation(
+    CREATE_MEMBERSHIP_MUTATION,
+  );
   const { business, userId, currency, userEmail } = useGlobalStore(state => ({
     business: state.business,
     userId: state.userId,
     currency: state.currency,
     userEmail: state.userEmail,
   }));
+
+  const membershipDetails: MembershipType = JSON.parse(membership as string);
+
   const [loading, setLoading] = useState(false);
   const [paymentAlertVisible, setPaymentAlertVisible] = useState({
     visible: false,
@@ -34,22 +39,16 @@ const Payment = () => {
   });
   const [paymentId, setPaymentId] = useState('');
   const [submit, setSubmit] = useState(false);
-  const eventDetails: Event = JSON.parse(event as string);
-  const ticketsDetails: TicketDetail[] = JSON.parse(tickets as string);
   const { initPaymentSheet, presentPaymentSheet } = useStripe();
 
   const [payment, { loading: keyLoading, error: keyError }] =
     useMutation(PAYMENT_MUTATION);
-  const [
-    createTicketsAndOrder,
-    { loading: ticketsLoading, error: ticketsError },
-  ] = useMutation(CREATE_TICKET_AND_ORDER_MUTATION);
 
   const fetchPaymentSheetParams = async () => {
     const res = await payment({
       variables: {
         input: {
-          amount: Number(total),
+          amount: Number(membershipDetails.price),
           currency: currency,
           email: userEmail,
           paymentType: paymentType as string,
@@ -105,7 +104,7 @@ const Payment = () => {
 
       setTimeout(() => {
         router.dismissAll();
-        router.replace('/(tabs)/tickets');
+        router.replace('/(tabs)/benefits');
       }, 3000);
     }
   };
@@ -115,31 +114,22 @@ const Payment = () => {
   }, []);
 
   const handleCheckout = async () => {
-    const ticketsToCreate = ticketsDetails.map(item => ({
-      businessId: business,
-      discountId: item.discount?.discount.id,
-      eventId: eventDetails.id,
-      price: item.price,
-      seatId: item.seatId,
-      seat: item.seatNumber,
-      rowId: item.rowId,
-      row: item.rowName,
-      sectionId: item.epc.section.id,
-      section: item.epc.section.name,
-      userId: userId,
-    }));
-
+    const expiryDate = new Date();
+    expiryDate.setFullYear(expiryDate.getFullYear() + 1);
     try {
-      await createTicketsAndOrder({
+      await createMembership({
         variables: {
           input: {
-            tickets: ticketsToCreate,
+            businessId: business,
+            userId: userId,
+            expiryDate: expiryDate,
+            membershipTypeId: membershipDetails.id,
             order: {
-              businessId: business,
-              paymentType: 'Ticket',
-              paymentId: paymentId,
               userId: userId,
-              total: Number(total),
+              businessId: business,
+              paymentType: paymentType,
+              paymentId: paymentId,
+              total: membershipDetails.price,
             },
           },
         },
@@ -165,37 +155,22 @@ const Payment = () => {
             </Text>
           </View>
           <View style={{ rowGap: 20 }}>
-            {ticketsDetails.map(item => (
-              <View key={item.id} className="flex items-start">
-                <View className="flex-row items-center w-full justify-between">
-                  <Text className="text-base text-center align-middle font-rbold">
-                    {eventDetails.name}
-                  </Text>
-                  <Text className="text-base text-center align-middle font-rmedium">
-                    {`${item.price} ${currency}`}
-                  </Text>
-                </View>
-                <Text className="text-base text-center align-middle font-rregular">
-                  {new Date(eventDetails.date).toLocaleDateString('cs-CZ')}
-                  {' - '}
-                  {new Date(eventDetails.date).toLocaleTimeString('cs-CZ', {
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    hour12: false,
-                  })}
+            <View className="flex items-start">
+              <View className="flex-row items-center w-full justify-between">
+                <Text className="text-base text-center align-middle font-rbold">
+                  {`${membershipDetails.name}`}
                 </Text>
-                <Text className="text-base text-center align-middle font-rregular">
-                  {eventDetails.template.venue.name}
-                  {', '}
-                  {item.seatId
-                    ? `Section: ${item.epc.section.name}, Row: ${item.rowName}, Seat: ${item.seatNumber}`
-                    : item.epc.section.name}
-                </Text>
-                <Text className="text-sm text-center align-middle font-rregular text-gray-500">
-                  {item.discount ? item.discount.discount.name : 'No discount'}
+                <Text className="text-base text-center align-middle font-rmedium">
+                  {`${membershipDetails.price} ${currency}`}
                 </Text>
               </View>
-            ))}
+              <Text className="text-base text-center align-middle font-rregular">
+                {`${membershipDetails.pointsPerTicket} points / ticket`}
+              </Text>
+              <Text className="text-base text-center align-middle font-rregular">
+                {membershipDetails.description}
+              </Text>
+            </View>
           </View>
           <View className="h-0.5 w-full bg-primary opacity-50 my-5" />
           <View className="flex-row w-full justify-between">
@@ -203,7 +178,7 @@ const Payment = () => {
               Total
             </Text>
             <Text className="text-start text-lg font-rmedium">
-              {`${total} ${currency}`}
+              {`${membershipDetails.price} ${currency}`}
             </Text>
           </View>
           <CustomButton

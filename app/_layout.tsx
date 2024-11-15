@@ -16,6 +16,7 @@ const RootLayout = () => {
   const { setOnboarding } = useGlobalStore(state => ({
     setOnboarding: state.setOnboarding,
   }));
+
   const [loaded, error] = useFonts({
     'Roboto-Black': require('../assets/fonts/Roboto-Black.ttf'),
     'Roboto-Bold': require('../assets/fonts/Roboto-Bold.ttf'),

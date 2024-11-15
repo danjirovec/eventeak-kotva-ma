@@ -23,7 +23,7 @@ const SignUp = () => {
   const [form, setForm] = useState<Form>({
     firstName: '',
     lastName: '',
-    placeOfBirth: '',
+    placeOfResidence: '',
     email: '',
     password: '',
     confirmPassword: '',
@@ -35,7 +35,7 @@ const SignUp = () => {
     confirmPassword: '',
     firstName: '',
     lastName: '',
-    placeOfBirth: '',
+    placeOfResidence: '',
     birthDate: '',
   });
   const [isSubmitting, setSubmitting] = useState(false);

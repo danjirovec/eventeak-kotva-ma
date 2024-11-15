@@ -19,6 +19,7 @@ module.exports = {
           300: '#a5a5a5',
           500: '#8e8e8e',
         },
+        unavailable: '#cccccc',
       },
       fontFamily: {
         rthin: ['Roboto-Thin', 'sans-serif'],
