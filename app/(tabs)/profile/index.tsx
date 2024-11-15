@@ -25,10 +25,7 @@ import CustomButton from '@/components/customButton';
 import SlideAlert from '@/components/slideAlert';
 import { supabase } from '@/lib/supabase';
 import { decode } from 'base64-arraybuffer';
-import {
-  UPDATE_MEMBERSHIP_MUTATION,
-  UPDATE_USER_AVATAR_MUTATION,
-} from '@/graphql/mutations';
+import { UPDATE_USER_AVATAR_MUTATION } from '@/graphql/mutations';
 import MembershipExtendModal from '@/components/membershipExtendModal';
 import MembershipModal from '@/components/membershipModal';
 
@@ -62,10 +59,6 @@ const Profile = () => {
     },
   });
 
-  const [
-    updateOneMembership,
-    { loading: membershipLoading, error: membershipError },
-  ] = useMutation(UPDATE_MEMBERSHIP_MUTATION);
   const [updateOneUser, { loading: uploadLoading, error: uploadError }] =
     useMutation(UPDATE_USER_AVATAR_MUTATION);
   const [refreshing, setRefreshing] = useState(false);
@@ -73,7 +66,7 @@ const Profile = () => {
   const [imageAlertVisible, setImageAlertVisible] = useState(false);
   const [imageSizeAlertVisible, setImageSizeAlertVisible] = useState(false);
   const [membershipModalVisible, setMembershipModalVisible] = useState(false);
-  const [extendMemModalVisible, setExntendMemModalVisible] = useState(false);
+  const [extendMemModalVisible, setExtendMemModalVisible] = useState(false);
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -134,34 +127,6 @@ const Profile = () => {
       await refetch();
       showImageAlert();
     }
-  };
-
-  const extendMembership = async () => {
-    let expiryDate = new Date();
-    if (user.membership?.expiryDate) {
-      expiryDate = new Date(user.membership?.expiryDate);
-    }
-    expiryDate.setFullYear(expiryDate.getFullYear() + 1);
-    try {
-      await updateOneMembership({
-        variables: {
-          input: {
-            id: user.membership?.id,
-            update: {
-              expiryDate: expiryDate,
-            },
-          },
-        },
-      });
-    } catch (error) {
-      console.log(error);
-    }
-    showMemnershipAlert();
-  };
-
-  const showMemnershipAlert = () => {
-    setMembershipAlertVisible(true);
-    setTimeout(() => setMembershipAlertVisible(false), 3500);
   };
 
   const showImageAlert = () => {
@@ -236,10 +201,9 @@ const Profile = () => {
               />
             }>
             <MembershipExtendModal
-              extend={extendMembership}
               visible={extendMemModalVisible}
-              setVisible={setExntendMemModalVisible}
-              user={user.id}
+              setVisible={setExtendMemModalVisible}
+              membership={user.membership ? user.membership : undefined}
             />
             <MembershipModal
               data={membershipTypes.membershipTypes.nodes}
@@ -385,7 +349,7 @@ const Profile = () => {
                 <CustomButton
                   title="Extend membership"
                   handlePress={async () => {
-                    setExntendMemModalVisible(true);
+                    setExtendMemModalVisible(true);
                   }}
                 />
               )}

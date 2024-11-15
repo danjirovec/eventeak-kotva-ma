@@ -125,6 +125,7 @@ export const USER_PROFILE_QUERY = gql`
         membershipType {
           id
           name
+          price
           pointsPerTicket
         }
       }

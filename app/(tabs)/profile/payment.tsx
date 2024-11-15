@@ -1,12 +1,13 @@
 import { Text, View } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { router, useLocalSearchParams } from 'expo-router';
-import { MembershipType } from '@/graphql/schema.types';
+import { Membership, MembershipType } from '@/graphql/schema.types';
 import CustomButton from '@/components/customButton';
 import { useMutation } from '@apollo/client';
 import {
   CREATE_MEMBERSHIP_MUTATION,
   PAYMENT_MUTATION,
+  UPDATE_MEMBERSHIP_MUTATION,
 } from '@/graphql/mutations';
 import Loader from '@/components/loader';
 import { useGlobalStore } from '@/context/globalProvider';
@@ -18,10 +19,18 @@ import { useStripe } from '@stripe/stripe-react-native';
 import SlideAlert from '@/components/slideAlert';
 
 const Payment = () => {
-  const { membership, paymentType } = useLocalSearchParams();
-  const [createMembership, { loading: membershipLoading, error }] = useMutation(
-    CREATE_MEMBERSHIP_MUTATION,
-  );
+  const { membership, paymentType, extend } = useLocalSearchParams();
+  const userMembership: Membership = extend
+    ? JSON.parse(extend as string)
+    : null;
+  const [
+    createMembership,
+    { loading: membershipLoading, error: membershipError },
+  ] = useMutation(CREATE_MEMBERSHIP_MUTATION);
+  const [
+    updateOneMembership,
+    { loading: membershipUpdateLoading, error: membershipUpdateError },
+  ] = useMutation(UPDATE_MEMBERSHIP_MUTATION);
   const { business, userId, currency, userEmail } = useGlobalStore(state => ({
     business: state.business,
     userId: state.userId,
@@ -114,30 +123,51 @@ const Payment = () => {
   }, []);
 
   const handleCheckout = async () => {
-    const expiryDate = new Date();
-    expiryDate.setFullYear(expiryDate.getFullYear() + 1);
-    try {
-      await createMembership({
-        variables: {
-          input: {
-            businessId: business,
-            userId: userId,
-            expiryDate: expiryDate,
-            membershipTypeId: membershipDetails.id,
-            order: {
-              userId: userId,
-              businessId: business,
-              paymentType: paymentType,
-              paymentId: paymentId,
-              total: membershipDetails.price,
+    if (userMembership) {
+      const expiryDate = new Date(userMembership.expiryDate);
+      expiryDate.setFullYear(expiryDate.getFullYear() + 1);
+      try {
+        await updateOneMembership({
+          variables: {
+            input: {
+              id: userMembership.id,
+              update: {
+                expiryDate: expiryDate,
+              },
             },
           },
-        },
-      });
-    } catch (e) {
-      console.error(e);
-      showPaymentAlert(false, 'Checkout fail');
-      return;
+        });
+      } catch (error) {
+        console.log(error);
+        showPaymentAlert(false, 'Checkout fail');
+        return;
+      }
+    } else {
+      const expiryDate = new Date();
+      expiryDate.setFullYear(expiryDate.getFullYear() + 1);
+      try {
+        await createMembership({
+          variables: {
+            input: {
+              businessId: business,
+              userId: userId,
+              expiryDate: expiryDate,
+              membershipTypeId: membershipDetails.id,
+              order: {
+                userId: userId,
+                businessId: business,
+                paymentType: paymentType,
+                paymentId: paymentId,
+                total: membershipDetails.price,
+              },
+            },
+          },
+        });
+      } catch (e) {
+        console.error(e);
+        showPaymentAlert(false, 'Checkout fail');
+        return;
+      }
     }
     showPaymentAlert(true, 'Payment success');
   };
@@ -167,7 +197,7 @@ const Payment = () => {
               <Text className="text-base text-center align-middle font-rregular">
                 {`${membershipDetails.pointsPerTicket} points / ticket`}
               </Text>
-              <Text className="text-base text-center align-middle font-rregular">
+              <Text className="text-base text-start align-middle font-rregular">
                 {membershipDetails.description}
               </Text>
             </View>

@@ -12,21 +12,17 @@
         "buildType": "apk"
       },
       "ios": {
-        "appleId": "john@turtle.com"
+        "simulator": true
       }
     },
     "production": {}
   },
   "submit": {
     "production": {
-      "android": {
-        "serviceAccountKeyPath": "../path/to/api-xxx-yyy-zzz.json",
-        "track": "internal"
-      },
       "ios": {
-        "appleId": "john@turtle.com",
-        "ascAppId": "1234567890",
-        "appleTeamId": "AB12XYZ34S"
+        "appleId": "danjirovec@gmail.com",
+        "ascAppId": "6738284655",
+        "appleTeamId": "4P6LT64W98"
       }
     }
   }

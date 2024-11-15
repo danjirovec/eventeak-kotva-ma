@@ -206,7 +206,7 @@ export type UserProfileQuery = {
         user: Pick<Types.User, 'id' | 'email'>;
         membershipType: Pick<
           Types.MembershipType,
-          'id' | 'name' | 'pointsPerTicket'
+          'id' | 'name' | 'price' | 'pointsPerTicket'
         >;
       }
     >;

@@ -558,8 +558,8 @@ export type CreateMembershipType = {
   businessId: Scalars['ID']['input'];
   description?: InputMaybe<Scalars['String']['input']>;
   name: Scalars['String']['input'];
-  pointsPerTicket?: InputMaybe<Scalars['Float']['input']>;
-  price?: InputMaybe<Scalars['Float']['input']>;
+  pointsPerTicket: Scalars['Float']['input'];
+  price: Scalars['Float']['input'];
 };
 
 export type CreateMembershipTypeSubscriptionFilterInput = {
@@ -1433,7 +1433,7 @@ export type Membership = {
   id: Scalars['ID']['output'];
   membershipType: MembershipType;
   points: Scalars['Float']['output'];
-  state?: Maybe<MembershipState>;
+  state: MembershipState;
   updated: Scalars['DateTime']['output'];
   user: User;
 };
@@ -1582,8 +1582,8 @@ export type MembershipType = {
   description?: Maybe<Scalars['String']['output']>;
   id: Scalars['ID']['output'];
   name: Scalars['String']['output'];
-  pointsPerTicket?: Maybe<Scalars['Float']['output']>;
-  price?: Maybe<Scalars['Float']['output']>;
+  pointsPerTicket: Scalars['Float']['output'];
+  price: Scalars['Float']['output'];
   updated: Scalars['DateTime']['output'];
 };
 
@@ -4395,7 +4395,7 @@ export type UpdateMembership = {
   expiryDate?: InputMaybe<Scalars['DateTime']['input']>;
   membershipTypeId?: InputMaybe<Scalars['ID']['input']>;
   points?: InputMaybe<Scalars['Float']['input']>;
-  state?: InputMaybe<MembershipState>;
+  state?: MembershipState;
   userId?: InputMaybe<Scalars['ID']['input']>;
 };
 

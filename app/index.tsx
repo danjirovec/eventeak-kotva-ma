@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { View, Text, ScrollView, Image } from 'react-native';
+import { View, ScrollView, Image } from 'react-native';
 import { images } from '../constants';
 import CustomButton from '@/components/customButton';
 import { Redirect, router } from 'expo-router';
@@ -50,7 +50,7 @@ const App = () => {
                 router.replace('/sign-in');
               }}
               containerStyles="w-80 mt-10 bg-white border-2 border-primary"
-              textStyles='text-primary'
+              textStyles="text-primary"
             />
           </View>
         </ScrollView>
