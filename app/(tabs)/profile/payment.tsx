@@ -108,6 +108,7 @@ const Payment = () => {
 
     if (error) {
       showPaymentAlert(false, error.message);
+      setSubmit(false);
     } else {
       await handleCheckout();
 
@@ -140,6 +141,7 @@ const Payment = () => {
       } catch (error) {
         console.log(error);
         showPaymentAlert(false, 'Checkout fail');
+        setSubmit(false);
         return;
       }
     } else {
@@ -166,6 +168,7 @@ const Payment = () => {
       } catch (e) {
         console.error(e);
         showPaymentAlert(false, 'Checkout fail');
+        setSubmit(false);
         return;
       }
     }
@@ -188,7 +191,7 @@ const Payment = () => {
             <View className="flex items-start">
               <View className="flex-row items-center w-full justify-between">
                 <Text className="text-base text-center align-middle font-rbold">
-                  {`${membershipDetails.name}`}
+                  {`${membershipDetails.name} - 1 year`}
                 </Text>
                 <Text className="text-base text-center align-middle font-rmedium">
                   {`${membershipDetails.price} ${currency}`}

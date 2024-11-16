@@ -21,7 +21,7 @@ const EventPreviewBox = ({ item }: { item: Event }) => {
             <Tag tag={item.template.category} icon={icons.category} />
             <Tag tag={`${item.template.length} min`} icon={icons.duration} />
             {item.template.language ? (
-              <Tag tag={item.template.language} icon={icons.subtitles} />
+              <Tag tag={item.template.language} icon={icons.volume} />
             ) : null}
             {item.template.subtitles ? (
               <Tag tag={item.template.subtitles} icon={icons.subtitles} />

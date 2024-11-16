@@ -34,7 +34,7 @@ const ForgotPassword = () => {
     if (error) {
       showAlert(error.message, false);
     } else {
-      showAlert('Reset link sent', false);
+      showAlert('Reset link sent', true);
     }
     setSubmitting(false);
   };

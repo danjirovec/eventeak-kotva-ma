@@ -100,6 +100,7 @@ const Payment = () => {
 
     if (error) {
       showPaymentAlert(false, error.message);
+      setSubmit(false);
     } else {
       await handleCheckout();
 
@@ -147,6 +148,7 @@ const Payment = () => {
     } catch (e) {
       console.error(e);
       showPaymentAlert(false, 'Checkout fail');
+      setSubmit(false);
       return;
     }
     showPaymentAlert(true, 'Payment success');
