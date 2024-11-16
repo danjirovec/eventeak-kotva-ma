@@ -8,6 +8,7 @@ import { Redirect, router } from 'expo-router';
 import Loader from '@/components/loader';
 import { saveAsyncStorage } from '@/lib/saveAsyncStorage';
 import { useGlobalStore } from '@/context/globalProvider';
+import 'react-native-reanimated';
 
 const App = () => {
   const { onboarding, isLoading } = useGlobalStore(state => ({
