@@ -3,8 +3,13 @@ import { Redirect, Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import Loader from '@/components/loader';
 import { useGlobalStore } from '@/context/globalProvider';
+import useNetworkStatus from '@/components/network';
 
 const AuthLaylout = () => {
+  const isConnected = useNetworkStatus();
+  if (!isConnected) {
+    return <Redirect href={'/connection'} />;
+  }
   const { isLoading, isLogged } = useGlobalStore(state => ({
     isLoading: state.isLoading,
     isLogged: state.isLogged,

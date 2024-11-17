@@ -1,23 +1,25 @@
 import NoScrollBody from '@/components/bodyNoScroll';
 import Container from '@/components/container';
 import Header from '@/components/header';
-import { Link } from 'expo-router';
+import useNetworkStatus from '@/components/network';
+import { Redirect } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { Text, View } from 'react-native';
 
-const NotFoundScreen = () => {
+const NoConnection = () => {
+  const isConnected = useNetworkStatus();
+  if (isConnected) {
+    return <Redirect href={'/'} />;
+  }
   return (
     <>
       <Container>
-        <Header title="Not found"></Header>
+        <Header title="No connection"></Header>
         <NoScrollBody>
           <View className="mt-5">
             <Text className="text-base text-center">
-              This screen doesn't exist.
+              You have no internet connection.
             </Text>
-            <Link href="/(tabs)/program" className="mt-15 pt-10 pb-10">
-              <Text className="text-base text-center">Go to home screen</Text>
-            </Link>
           </View>
         </NoScrollBody>
       </Container>
@@ -26,4 +28,4 @@ const NotFoundScreen = () => {
   );
 };
 
-export default NotFoundScreen;
+export default NoConnection;

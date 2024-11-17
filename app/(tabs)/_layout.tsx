@@ -7,6 +7,7 @@ import Loader from '@/components/loader';
 import { useGlobalStore } from '@/context/globalProvider';
 import { useQuery } from '@apollo/client';
 import { BUSINESS_QUERY } from '@/graphql/queries';
+import useNetworkStatus from '@/components/network';
 
 const TabIcon = ({
   icon,
@@ -35,6 +36,10 @@ const TabIcon = ({
 };
 
 const TabsLayout = () => {
+  const isConnected = useNetworkStatus();
+  if (!isConnected) {
+    return <Redirect href={'/connection'} />;
+  }
   const { isLoading, isLogged, isLoggingOut, business, setCurrency } =
     useGlobalStore(state => ({
       isLoading: state.isLoading,

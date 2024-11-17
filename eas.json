@@ -15,10 +15,10 @@
         "EXPO_PUBLIC_SUPABASE_URL": "https://ncdwlflcmlklzfsuijvj.supabase.co"
       },
       "android": {
-        "buildType": "apk"
+        "buildType": "app-bundle"
       },
       "ios": {
-        "simulator": true
+        "simulator": false
       }
     },
     "production": {}

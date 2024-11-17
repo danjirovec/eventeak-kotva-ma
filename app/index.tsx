@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { View, ScrollView, Image } from 'react-native';
+import { View, ScrollView, Image, Text } from 'react-native';
 import { images } from '../constants';
 import CustomButton from '@/components/customButton';
 import { Redirect, router } from 'expo-router';
@@ -9,6 +9,7 @@ import Loader from '@/components/loader';
 import { saveAsyncStorage } from '@/lib/saveAsyncStorage';
 import { useGlobalStore } from '@/context/globalProvider';
 import 'react-native-reanimated';
+import useNetworkStatus from '@/components/network';
 
 const App = () => {
   const { onboarding, isLoading } = useGlobalStore(state => ({

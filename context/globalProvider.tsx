@@ -18,7 +18,7 @@ interface GlobalStoreProps {
   setUserId: (userId: string | null) => void;
   setUserEmail: (userEmail: string | null) => void;
   setIsLogged: (isLogged: boolean) => void;
-  setIsLoading: (isLogged: boolean) => void;
+  setIsLoading: (isLoading: boolean) => void;
   setOnboarding: (onboarding: boolean) => void;
   setSession: (newSession: Session | null) => void;
   setCurrency: (newCurrency: string | null) => void;

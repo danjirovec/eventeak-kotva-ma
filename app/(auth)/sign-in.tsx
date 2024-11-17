@@ -14,6 +14,7 @@ import Container from '@/components/container';
 import Body from '@/components/body';
 import Header from '@/components/header';
 import SlideAlert from '@/components/slideAlert';
+import useNetworkStatus from '@/components/network';
 
 const SignIn = () => {
   const [form, setForm] = useState({ email: '', password: '' });
@@ -21,6 +22,8 @@ const SignIn = () => {
   const [isSubmitting, setSubmitting] = useState(false);
   const [valid, setValid] = useState(false);
   const [alert, setAlert] = useState({ visible: false, message: '' });
+
+  const isConnected = useNetworkStatus();
 
   const submit = async () => {
     setSubmitting(true);
@@ -51,6 +54,14 @@ const SignIn = () => {
       setValid(false);
     }
   }, [form]);
+
+  if (!isConnected) {
+    return (
+      <View>
+        <Text>"Fuck"</Text>
+      </View>
+    );
+  }
 
   return (
     <Container>
