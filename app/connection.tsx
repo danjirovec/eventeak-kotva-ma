@@ -18,7 +18,10 @@ const NoConnection = () => {
         <NoScrollBody>
           <View className="mt-5">
             <Text className="text-base text-center">
-              You have no internet connection.
+              You have no internet connection
+            </Text>
+            <Text className="text-base text-center">
+              Please reconnect to continue using this app
             </Text>
           </View>
         </NoScrollBody>

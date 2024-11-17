@@ -13,7 +13,7 @@ const NotFoundScreen = () => {
         <NoScrollBody>
           <View className="mt-5">
             <Text className="text-base text-center">
-              This screen doesn't exist.
+              This screen doesn't exist
             </Text>
             <Link href="/(tabs)/program" className="mt-15 pt-10 pb-10">
               <Text className="text-base text-center">Go to home screen</Text>

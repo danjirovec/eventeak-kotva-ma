@@ -37,9 +37,6 @@ const TabIcon = ({
 
 const TabsLayout = () => {
   const isConnected = useNetworkStatus();
-  if (!isConnected) {
-    return <Redirect href={'/connection'} />;
-  }
   const { isLoading, isLogged, isLoggingOut, business, setCurrency } =
     useGlobalStore(state => ({
       isLoading: state.isLoading,
@@ -61,6 +58,10 @@ const TabsLayout = () => {
       setCurrency(data.businesses.nodes[0].currency);
     }
   }, [loading]);
+
+  if (!isConnected) {
+    return <Redirect href={'/connection'} />;
+  }
 
   if (!isLoading && !isLogged) return <Redirect href="/sign-in" />;
 

@@ -7,13 +7,14 @@ import useNetworkStatus from '@/components/network';
 
 const AuthLaylout = () => {
   const isConnected = useNetworkStatus();
-  if (!isConnected) {
-    return <Redirect href={'/connection'} />;
-  }
   const { isLoading, isLogged } = useGlobalStore(state => ({
     isLoading: state.isLoading,
     isLogged: state.isLogged,
   }));
+
+  if (!isConnected) {
+    return <Redirect href={'/connection'} />;
+  }
 
   if (!isLoading && isLogged) return <Redirect href="/(tabs)/program" />;
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { View, ScrollView, Image, Text } from 'react-native';
@@ -9,7 +9,6 @@ import Loader from '@/components/loader';
 import { saveAsyncStorage } from '@/lib/saveAsyncStorage';
 import { useGlobalStore } from '@/context/globalProvider';
 import 'react-native-reanimated';
-import useNetworkStatus from '@/components/network';
 
 const App = () => {
   const { onboarding, isLoading } = useGlobalStore(state => ({
