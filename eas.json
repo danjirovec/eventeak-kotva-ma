@@ -1,6 +1,7 @@
 {
   "cli": {
-    "version": ">= 5.9.1"
+    "version": ">= 5.9.1",
+    "appVersionSource": "local"
   },
   "build": {
     "development": {
@@ -15,16 +16,23 @@
         "EXPO_PUBLIC_SUPABASE_URL": "https://ncdwlflcmlklzfsuijvj.supabase.co"
       },
       "android": {
-        "buildType": "apk"
+        "buildType": "app-bundle"
       },
       "ios": {
         "simulator": false
       }
     },
-    "production": {}
+    "production": {
+      "env": {
+        "EXPO_PUBLIC_BUCKET_URL": "https://ncdwlflcmlklzfsuijvj.supabase.co/storage/v1/object/public/applausio/",
+        "EXPO_PUBLIC_API_URL": "https://www.api.staging.eventeak.com/graphql",
+        "EXPO_PUBLIC_SUPABASE_PUBLIC_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5jZHdsZmxjbWxrbHpmc3VpanZqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjAzODk2NTUsImV4cCI6MjAzNTk2NTY1NX0.q0uQajcQb64MwpmNaVyJWsZsrUZYwzj6RRIANT5qXSs",
+        "EXPO_PUBLIC_SUPABASE_URL": "https://ncdwlflcmlklzfsuijvj.supabase.co"
+      }
+    }
   },
   "submit": {
-    "production": {
+    "preview": {
       "ios": {
         "appleId": "danjirovec@gmail.com",
         "ascAppId": "6738284655",
