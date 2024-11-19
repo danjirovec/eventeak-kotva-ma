@@ -107,7 +107,9 @@ const SignUp = () => {
     }
     if (!session && !error) {
       showAlert('Verify your email', true);
-      router.replace('/(auth)/sign-in');
+      setTimeout(() => {
+        router.replace('/(auth)/sign-in');
+      }, 3000);
     }
     setSubmitting(false);
   };
