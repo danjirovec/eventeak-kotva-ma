@@ -12,8 +12,8 @@ const SignUpStepOne = ({
 }: {
   form: Form;
   setForm: SetForm;
-  errors: SignUpErrors;
-  setErrors: SetSignUpErrors;
+  errors: SignUpErrorsStepOne;
+  setErrors: SetSignUpErrorsStepOne;
 }) => {
   const handleStringChange = (e: string, key: string) => {
     setForm({ ...form, [key]: e });
@@ -72,7 +72,7 @@ const SignUpStepOne = ({
       ) : null}
 
       <DatePicker
-        title="Date of birth*"
+        title="Date of Birth*"
         value={form.birthDate}
         onChange={(event, date) => {
           if (date) {

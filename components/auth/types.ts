@@ -1,11 +1,14 @@
-type SignUpErrors = {
-  email: string;
-  password: string;
-  confirmPassword: string;
+type SignUpErrorsStepOne = {
   firstName: string;
   lastName: string;
   placeOfResidence: string;
   birthDate: string;
+};
+
+type SignUpErrorsStepTwo = {
+  email: string;
+  password: string;
+  confirmPassword: string;
 };
 
 type EmailErrors = {
@@ -21,15 +24,20 @@ type KeyValueObject = {
   [key: string]: string | Date | number;
 };
 
-type SetSignUpErrors = React.Dispatch<
+type SetSignUpErrorsStepOne = React.Dispatch<
   React.SetStateAction<{
-    email: string;
-    password: string;
-    confirmPassword: string;
     firstName: string;
     lastName: string;
     placeOfResidence: string;
     birthDate: string;
+  }>
+>;
+
+type SetSignUpErrorsStepTwo = React.Dispatch<
+  React.SetStateAction<{
+    email: string;
+    password: string;
+    confirmPassword: string;
   }>
 >;
 

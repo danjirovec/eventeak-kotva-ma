@@ -15,8 +15,8 @@ const SignUpStepTwo = ({
 }: {
   form: Form;
   setForm: SetForm;
-  errors: SignUpErrors;
-  setErrors: SetSignUpErrors;
+  errors: SignUpErrorsStepTwo;
+  setErrors: SetSignUpErrorsStepTwo;
 }) => {
   const handleEmailChange = (e: string) => {
     setForm({ ...form, email: e });
@@ -66,7 +66,7 @@ const SignUpStepTwo = ({
       ) : null}
 
       <FormField
-        title="Confirm password*"
+        title="Confirm Password*"
         value={form.confirmPassword}
         handleChangeText={handleConfirmPasswordChange}
         otherStyles="mt-5"

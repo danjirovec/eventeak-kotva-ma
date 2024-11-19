@@ -29,14 +29,16 @@ const SignUp = () => {
     confirmPassword: '',
     birthDate: getToday(),
   });
-  const [errors, setErrors] = useState<SignUpErrors>({
-    email: '',
-    password: '',
-    confirmPassword: '',
+  const [errorsStepOne, setErrorsStepOne] = useState<SignUpErrorsStepOne>({
     firstName: '',
     lastName: '',
     placeOfResidence: '',
     birthDate: '',
+  });
+  const [errorsStepTwo, setErrorsStepTwo] = useState<SignUpErrorsStepTwo>({
+    email: '',
+    password: '',
+    confirmPassword: '',
   });
   const [isSubmitting, setSubmitting] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
@@ -58,8 +60,8 @@ const SignUp = () => {
           <SignUpStepOne
             form={form}
             setForm={setForm}
-            errors={errors}
-            setErrors={setErrors}
+            errors={errorsStepOne}
+            setErrors={setErrorsStepOne}
           />
         );
       case 2:
@@ -67,8 +69,8 @@ const SignUp = () => {
           <SignUpStepTwo
             form={form}
             setForm={setForm}
-            errors={errors}
-            setErrors={setErrors}
+            errors={errorsStepTwo}
+            setErrors={setErrorsStepTwo}
           />
         );
       default:
@@ -85,17 +87,17 @@ const SignUp = () => {
   };
 
   useEffect(() => {
-    if (validateRequiredStepOne(form)) {
+    if (validateRequiredStepOne(form) && validateErrors(errorsStepOne)) {
       setValidOne(true);
     } else {
       setValidOne(false);
     }
-    if (validateRequiredStepTwo(form) && validateErrors(errors)) {
+    if (validateRequiredStepTwo(form) && validateErrors(errorsStepTwo)) {
       setValidTwo(true);
     } else {
       setValidTwo(false);
     }
-  }, [errors]);
+  }, [errorsStepOne, errorsStepTwo]);
 
   const submit = async () => {
     setSubmitting(true);
