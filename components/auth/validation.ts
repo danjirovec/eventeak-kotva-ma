@@ -79,9 +79,9 @@ export const validateRequiredStepOne = (form: KeyValueObject) => {
       valid = false;
     }
   }
-  if (form.birthDate >= getToday()) {
-    valid = false;
-  }
+  // if (form.birthDate >= getToday()) {
+  //   valid = false;
+  // }
   return valid;
 };
 

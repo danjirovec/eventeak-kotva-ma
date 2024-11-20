@@ -72,7 +72,7 @@ const SignUpStepOne = ({
       ) : null}
 
       <DatePicker
-        title="Date of Birth*"
+        title="Date of Birth"
         value={form.birthDate}
         onChange={(event, date) => {
           if (date) {
