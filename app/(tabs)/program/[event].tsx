@@ -308,7 +308,7 @@ const EventDetail = () => {
                     ref={webViewRef}
                     onTouchStart={() => setScrollEnabled(false)}
                     onTouchEnd={() => setScrollEnabled(true)}
-                    className="w-96 h-96 my-2.5"
+                    className="w-full h-96 my-2.5"
                     scalesPageToFit={true}
                     onMessage={handleOnMessage}
                     source={{

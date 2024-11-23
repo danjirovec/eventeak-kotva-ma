@@ -21,14 +21,15 @@ const TabIcon = ({
   focused: boolean;
 }) => {
   return (
-    <View className="items-center justify-center gap-2 border-red-500">
+    <View className="items-center justify-center gap-2">
       <Image
         source={icon}
         resizeMode="contain"
         tintColor={color}
         className="w-6 h-6"
       />
-      <Text className={`${focused ? 'font-rbold' : 'font-rmedium'} text-xs`}>
+      <Text
+        className={`${focused ? 'font-rbold' : 'font-rmedium'} text-xs w-full`}>
         {name}
       </Text>
     </View>
@@ -75,9 +76,14 @@ const TabsLayout = () => {
             tabBarActiveTintColor: '#FFA001',
             tabBarInactiveTintColor: '#a5a5a5',
             tabBarStyle: {
+              borderWidth: 0,
               backgroundColor: '#f7f7f7',
               height: 84,
               display: !isLoggingOut ? 'flex' : 'none',
+              borderTopWidth: 0, // Removes the top border
+              elevation: 0, // Removes the shadow on Android
+              shadowOpacity: 0, // Removes the shadow on iOS
+              borderTopColor: 'transparent',
             },
           }}>
           <Tabs.Screen

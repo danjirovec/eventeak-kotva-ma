@@ -41,7 +41,7 @@ const SlideAlert = ({
       className="w-full justify-end items-center absolute top-5 left-0 right-0 z-50"
       style={{ transform: [{ translateY: slideAnim }] }}>
       <View
-        className="flex-row items-center justify-center bg-gray-100 shadow-sm shadow-black-100 w-2/3 h-fit rounded-lg p-5 mr-0.5"
+        className="flex-row items-center justify-center bg-gray-100 w-2/3 h-fit rounded-lg p-5 mr-0.5"
         style={{ columnGap: 10 }}>
         {success ? (
           <Icon icon={icons.checkfull} color="green" />

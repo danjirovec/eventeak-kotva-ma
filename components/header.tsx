@@ -10,7 +10,7 @@ type Props = {
 
 const Header = ({ left, right, title, titleStyles }: Props) => {
   return (
-    <View className="flex-row justify-between items-center px-4 py-2 h-14 bg-gray-100 shadow-sm shadow-black">
+    <View className="flex-row justify-between items-center px-4 py-2 h-14 bg-gray-100">
       <View className="flex-1 items-start">{left}</View>
       <View className="justify-center items-center">
         <Text

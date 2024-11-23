@@ -71,7 +71,7 @@ const SignUpStepOne = ({
         <Text className="text-red-500">{errors.placeOfResidence}</Text>
       ) : null}
 
-      <DatePicker
+      {/* <DatePicker
         title="Date of Birth"
         value={form.birthDate}
         onChange={(event, date) => {
@@ -83,7 +83,7 @@ const SignUpStepOne = ({
       />
       {errors.birthDate ? (
         <Text className="text-red-500">{errors.birthDate}</Text>
-      ) : null}
+      ) : null} */}
     </View>
   );
 };
