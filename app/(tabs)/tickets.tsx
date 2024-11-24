@@ -1,5 +1,5 @@
 import { RefreshControl, Text, TouchableOpacity, View } from 'react-native';
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import TicketModal from '@/components/ticketModal';
 import { useQuery } from '@apollo/client';
 import { USER_TICKETS_QUERY } from '@/graphql/queries';
@@ -10,6 +10,7 @@ import Header from '@/components/header';
 import Body from '@/components/body';
 import Loader from '@/components/loader';
 import SlideDown from '@/components/slideDown';
+import { useFocusEffect } from 'expo-router';
 
 const Tickets = () => {
   const { business, userId } = useGlobalStore(state => ({
@@ -52,6 +53,15 @@ const Tickets = () => {
     await refetch();
     setRefreshing(false);
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      const fetchData = async () => {
+        await refetch();
+      };
+      fetchData();
+    }, []),
+  );
 
   return (
     <Container>

@@ -1,5 +1,5 @@
 import { Text, View, TouchableOpacity, RefreshControl } from 'react-native';
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useQuery } from '@apollo/client';
 import { BENEFITS_QUERY } from '@/graphql/queries';
 import Loader from '@/components/loader';
@@ -12,6 +12,7 @@ import Header from '@/components/header';
 import Container from '@/components/container';
 import Body from '@/components/body';
 import SlideDown from '@/components/slideDown';
+import { useFocusEffect } from 'expo-router';
 
 const Benefits = () => {
   const { business, userId } = useGlobalStore(state => ({
@@ -55,6 +56,15 @@ const Benefits = () => {
     await refetch();
     setRefreshing(false);
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      const fetchData = async () => {
+        await refetch();
+      };
+      fetchData();
+    }, []),
+  );
 
   return (
     <Container>

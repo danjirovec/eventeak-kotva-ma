@@ -16,6 +16,7 @@ import { bucketUrl } from '@/lib/config';
 import Loader from '@/components/loader';
 import { UserProfile } from '@/graphql/schema.types';
 import * as ImagePicker from 'expo-image-picker';
+import * as ImageManipulator from 'expo-image-manipulator';
 import { useGlobalStore } from '@/context/globalProvider';
 import { client } from '@/apollo/client';
 import Body from '@/components/body';
@@ -62,7 +63,6 @@ const Profile = () => {
   const [updateOneUser, { loading: uploadLoading, error: uploadError }] =
     useMutation(UPDATE_USER_AVATAR_MUTATION);
   const [refreshing, setRefreshing] = useState(false);
-  const [membershipAlertVisible, setMembershipAlertVisible] = useState(false);
   const [imageAlertVisible, setImageAlertVisible] = useState(false);
   const [imageSizeAlertVisible, setImageSizeAlertVisible] = useState(false);
   const [membershipModalVisible, setMembershipModalVisible] = useState(false);
@@ -77,11 +77,24 @@ const Profile = () => {
       base64: true,
     });
 
-    if (result.assets && result.assets[0].fileSize) {
-      if (result.assets[0].fileSize > 524288) {
-        showImageSizeAlert();
-        return;
-      }
+    if (result.canceled) {
+      return null;
+    }
+    let resizedPhoto = null;
+
+    if (result.assets && result.assets[0].base64) {
+      resizedPhoto = await ImageManipulator.manipulateAsync(
+        `data:image/jpeg;base64,${result.assets[0].base64}`,
+        [{ resize: { width: 300 } }],
+        {
+          compress: 0.8,
+          format: ImageManipulator.SaveFormat.JPEG,
+          base64: true,
+        },
+      );
+    } else {
+      showImageSizeAlert();
+      return null;
     }
 
     if (!result.canceled) {
@@ -91,23 +104,25 @@ const Profile = () => {
           .remove([`avatars/${user.avatarUrl}`]);
         if (error) {
           console.log(error);
+          showImageSizeAlert();
           return null;
         }
       }
       const hexId = Date.now().toString(32);
-      const base64 = result.assets[0].base64;
-      if (!base64) {
+      if (!resizedPhoto.base64) {
+        showImageSizeAlert();
         return null;
       }
       const { error } = await supabase.storage
         .from('applausio')
-        .upload(`avatars/${hexId}`, decode(base64), {
+        .upload(`avatars/${hexId}`, decode(resizedPhoto.base64), {
           cacheControl: '3600',
           upsert: true,
           contentType: 'image/jpeg',
         });
       if (error) {
         console.log(error);
+        showImageSizeAlert();
         return null;
       }
       try {
@@ -123,6 +138,8 @@ const Profile = () => {
         });
       } catch (error) {
         console.log(error);
+        showImageSizeAlert();
+        return null;
       }
       await refetch();
       showImageAlert();
@@ -331,19 +348,13 @@ const Profile = () => {
               </View>
               <SlideAlert
                 success={false}
-                message="Image size too large"
-                description="Must be less than 500 kB"
+                message="Image upload failed"
                 visible={imageSizeAlertVisible}
               />
               <SlideAlert
                 success={true}
                 message="Image uploaded"
                 visible={imageAlertVisible}
-              />
-              <SlideAlert
-                success={true}
-                message="Membership extended"
-                visible={membershipAlertVisible}
               />
               {user.membership?.state == 'Renewal' && (
                 <CustomButton
