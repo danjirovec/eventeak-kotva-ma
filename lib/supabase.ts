@@ -32,18 +32,38 @@ export const signInWithEmail = async (email: string, password: string) => {
 };
 
 export const signUpWithEmail = async (data: Form, business: string) => {
-  const { data: user } = await supabase
-    .from('user')
-    .select('email')
-    .eq('email', data.email)
-    .limit(1)
-    .single();
+  const { data: businessUser, error: bUe } = await supabase
+    .from('business_user')
+    .select(
+      `
+      business_id,
+      user!inner (
+        email
+      )
+    `,
+    )
+    .eq('business_id', business)
+    .eq('user.email', data.email)
+    .maybeSingle();
 
-  if (user) {
+  if (businessUser) {
     return {
       error: new AuthError('User with this email already exists'),
       session: null,
     };
+  }
+
+  const { data: user } = await supabase
+    .from('user')
+    .select('email, id')
+    .eq('email', data.email)
+    .maybeSingle();
+
+  if (user) {
+    const { error } = await supabase
+      .from('business_user')
+      .insert({ business_id: business, user_id: user.id, role: 'Customer' });
+    return { error, session: null, created: true };
   }
 
   const {

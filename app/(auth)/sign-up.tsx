@@ -10,7 +10,7 @@ import {
   validateRequiredStepTwo,
 } from '@/components/auth/validation';
 import { getToday } from '@/lib/getToday';
-import { signUpWithEmail } from '@/lib/supabase';
+import { signUpWithEmail, supabase } from '@/lib/supabase';
 import { useGlobalStore } from '@/context/globalProvider';
 import Body from '@/components/body';
 import Container from '@/components/container';
@@ -101,9 +101,17 @@ const SignUp = () => {
 
   const submit = async () => {
     setSubmitting(true);
-    const { error, session } = await signUpWithEmail(form, business);
+    const { error, session, created } = await signUpWithEmail(form, business);
     if (error) {
       showAlert(error.message, false);
+    }
+    if (!session && !error && created) {
+      showAlert('You can now sign in', true);
+      setTimeout(() => {
+        router.replace('/(auth)/sign-in');
+      }, 3000);
+      setSubmitting(false);
+      return;
     }
     if (!session && !error) {
       showAlert('Verify your email', true);

@@ -39,12 +39,12 @@ const FormField = ({
           keyboardType={keyboardType}
           onChangeText={handleChangeText}
           secureTextEntry={
-            ['Password*', 'Confirm password*'].includes(title) && !showPassword
+            ['Password*', 'Confirm Password*'].includes(title) && !showPassword
           }
           {...props}
         />
 
-        {['Password*', 'Confirm password*'].includes(title) && (
+        {['Password*', 'Confirm Password*'].includes(title) && (
           <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
             <Image
               tintColor="#ECECEC"
