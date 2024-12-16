@@ -1,5 +1,5 @@
 import { FlatList, RefreshControl, Text, View } from 'react-native';
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useQuery } from '@apollo/client';
 import { EVENTS_QUERY } from '@/graphql/queries';
 import CategoryFilter from '@/components/categoryFilter';
@@ -19,12 +19,14 @@ const Program = () => {
   const { business } = useGlobalStore(state => ({
     business: state.business,
   }));
+  const currentDate = useMemo(() => new Date().toISOString(), []);
   const { data, loading, refetch, fetchMore, error } = useQuery(EVENTS_QUERY, {
     variables: {
       filter: {
         and: [
           { businessId: { eq: business } },
           { template: { category: { eq: selectedCategory } } },
+          { date: { gte: currentDate } },
         ],
       },
       sorting: { field: 'date', direction: 'ASC' },
