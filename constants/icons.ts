@@ -25,6 +25,8 @@ import settings from '../assets/icons/settings.png';
 import angleright from '../assets/icons/angle-right.png';
 import angledown from '../assets/icons/angle-down.png';
 import camera from '../assets/icons/camera.png';
+import filter from '../assets/icons/filter.png';
+import clear from '../assets/icons/filter-clear.png';
 
 export default {
   settings,
@@ -54,4 +56,6 @@ export default {
   angledown,
   angleright,
   camera,
+  filter,
+  clear,
 };
