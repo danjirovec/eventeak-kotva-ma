@@ -12,12 +12,12 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "buildNumber": "5",
+      "buildNumber": "6",
       "supportsTablet": true,
       "bundleIdentifier": "com.eventeak"
     },
     "android": {
-      "versionCode": 7,
+      "versionCode": 8,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
