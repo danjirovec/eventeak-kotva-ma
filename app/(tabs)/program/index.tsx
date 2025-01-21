@@ -141,14 +141,14 @@ const Program = () => {
                 onPress={openDatePickerRange}>
                 <Icon
                   icon={icons.filter}
-                  color="gray-500"
+                  color="#8e8e8e"
                   iconsStyles="h-6 w-6"
                 />
               </TouchableOpacity>
               <TouchableOpacity className="h-5 w-5" onPress={clearFilters}>
                 <Icon
                   icon={icons.clear}
-                  color="gray-500"
+                  color="#8e8e8e"
                   iconsStyles="h-6 w-6"
                 />
               </TouchableOpacity>
